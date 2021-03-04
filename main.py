@@ -4,13 +4,64 @@
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+
+def start():
+    testBowtie = createTestBowtie()
+    trainingSetEventTree = createTrainingSetEventTree(testBowtie)
+    trainingSetFaultTree = createTrainingSetFaultTree(testBowtie)
+    topEvent = getTopEvent(testBowtie)
+    learningParameters = getLearningParameters()
+
+    undirectedEventTree = createUndirectedTree(trainingSetEventTree)
+    undirectedFaultTree = createUndirectedTree(trainingSetFaultTree)
+    directedEventTree = createDirectedTree(undirectedEventTree, topEvent)
+    directedFaultTree = createDirectedTree(undirectedFaultTree, topEvent)
+    bowtie = createBowTie(directedEventTree, directedFaultTree)
+    
+
+def createTestBowtie():
+    print("createTestBowtie")
+    return 1
+
+def createTrainingSetFaultTree(testBowtie):
+    print("createTrainingSetFaultTree")
+    return 1
+
+def createTrainingSetEventTree(testBowtie):
+    print("createTrainingSetEventTree")
+    return 1
+
+def getTopEvent(testBowtie):
+    print("getTopEvent")
+    return 1
+
+def getLearningParameters():
+    print("getLearningParameters")
+    return 1
+
+def createUndirectedTree(trainingSet):
+    print("createUndirectedTree")
+    return 1
+
+def createDirectedTree(undirectedTree,topEvent):
+    print("createDirectedTree")
+    return 1
+
+def createQuantiviedTree(undirectedTree,topEvent):
+    print("createQuantiviedTree")
+    return 1
+
+
+def createBowTie(directedEventTree, directedFaultTree):
+    print("createBowTie")
+    return 1
+
+
+
+if __name__ == '__main__':
+    start()
+
+
