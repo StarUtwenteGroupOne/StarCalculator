@@ -5,6 +5,7 @@
 
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
+import random
 
 
 def start():
@@ -30,6 +31,7 @@ def createQuantitativeBowTie(trainingSetEventTree, trainingSetFaultTree, topEven
 
 def createTestBowtie():
     print("createTestBowtie")
+    # A hardcoded fault tree
     return 1
 
 
@@ -81,6 +83,14 @@ def createQuantitativeBowTieFromTrees(quantitativeEventTree, quantitativeFaultTr
 def printQuantitativeBowTie(quantitativeBowTie):
     print("printQuantitativeBowTie")
     return 1
+
+
+def generate_trainingset_fault_tree(nr_events):
+    return [(x, y, random.randint(0, 1)) for x in range(0, nr_events) for y in range(0, nr_events)]
+
+
+def generate_trainingset_event_tree(nr_events):
+    return [(x, y, random.randint(0, 1)) for x in range(0, nr_events) for y in range(0, nr_events)]
 
 
 if __name__ == '__main__':
