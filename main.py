@@ -9,12 +9,12 @@ import random
 
 
 def start():
-    testBowtie = create_test_bowtie()
-    trainingSetEventTree = create_trainingset_event_tree(testBowtie)
-    trainingSetFaultTree = create_trainingset_fault_tree(testBowtie)
-    topEvent = get_top_event(testBowtie)
-    learningParameters = get_learning_parameters()
-    bowtie = create_quantitative_bowtie(trainingSetEventTree, trainingSetFaultTree, topEvent, learningParameters)
+    test_bowtie = create_test_bowtie()
+    training_set_event_tree = create_trainingset_event_tree(test_bowtie)
+    training_set_fault_tree = create_trainingset_fault_tree(test_bowtie)
+    top_event = get_top_event(test_bowtie)
+    learning_parameters = get_learning_parameters()
+    bowtie = create_quantitative_bowtie(training_set_event_tree, training_set_fault_tree, top_event, learning_parameters)
     print_quantitative_bowtie(bowtie)
 
 
