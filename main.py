@@ -9,88 +9,80 @@ import random
 
 
 def start():
-    testBowtie = createTestBowtie()
-    trainingSetEventTree = createTrainingSetEventTree(testBowtie)
-    trainingSetFaultTree = createTrainingSetFaultTree(testBowtie)
-    topEvent = getTopEvent(testBowtie)
-    learningParameters = getLearningParameters()
-    bowtie = createQuantitativeBowTie(trainingSetEventTree, trainingSetFaultTree, topEvent, learningParameters)
-    printQuantitativeBowTie(bowtie)
+    test_bowtie = create_test_bowtie()
+    training_set_event_tree = create_trainingset_event_tree(test_bowtie)
+    training_set_fault_tree = create_trainingset_fault_tree(test_bowtie)
+    top_event = get_top_event(test_bowtie)
+    learning_parameters = get_learning_parameters()
+    bowtie = create_quantitative_bowtie(training_set_event_tree, training_set_fault_tree, top_event, learning_parameters)
+    print_quantitative_bowtie(bowtie)
 
 
-def createQuantitativeBowTie(trainingSetEventTree, trainingSetFaultTree, topEvent, learningParameters):
-    undirectedEventTree = createUndirectedTree(trainingSetEventTree)
-    undirectedFaultTree = createUndirectedTree(trainingSetFaultTree)
-    directedEventTree = createDirectedTree(undirectedEventTree, topEvent)
-    directedFaultTree = createDirectedTree(undirectedFaultTree, topEvent)
-    quantitativeEventTree = createQuantitativeEventTree(directedEventTree, learningParameters)
-    quantitativeFaultTree = createQuantitativeFaultTree(directedFaultTree, learningParameters)
-    quantitativeBowtie = createQuantitativeBowTieFromTrees(quantitativeEventTree, quantitativeFaultTree)
-    return quantitativeBowtie
+def create_quantitative_bowtie(training_set_event_tree, training_set_fault_tree, top_event, learning_parameters):
+    undirected_event_tree = create_undirected_tree(training_set_event_tree)
+    undirected_fault_tree = create_undirected_tree(training_set_fault_tree)
+    directed_event_tree = create_directed_tree(undirected_event_tree, top_event)
+    directed_fault_tree = create_directed_tree(undirected_fault_tree, top_event)
+    quantitative_event_tree = create_quantitative_event_tree(directed_event_tree, learning_parameters)
+    quantitative_fault_tree = create_quantitative_fault_tree(directed_fault_tree, learning_parameters)
+    quantitative_bowtie = create_quantitative_bowtie_from_trees(quantitative_event_tree, quantitative_fault_tree)
+    return quantitative_bowtie
 
 
-def createTestBowtie():
+def create_test_bowtie():
     print("createTestBowtie")
     # A hardcoded fault tree
     return 1
 
 
-def createTrainingSetFaultTree(testBowtie):
+def create_trainingset_fault_tree(test_bowtie):
     print("createTrainingSetFaultTree")
     return 1
 
 
-def createTrainingSetEventTree(testBowtie):
+def create_trainingset_event_tree(test_bowtie):
     print("createTrainingSetEventTree")
     return 1
 
 
-def getTopEvent(testBowtie):
+def get_top_event(test_bowtie):
     print("getTopEvent")
     return 1
 
 
-def getLearningParameters():
+def get_learning_parameters():
     print("getLearningParameters")
     return 1
 
 
-def createUndirectedTree(trainingSet):
+def create_undirected_tree(training_set):
     print("createUndirectedTree")
     return 1
 
 
-def createDirectedTree(undirectedTree, topEvent):
+def create_directed_tree(undirected_tree, top_event):
     print("createDirectedTree")
     return 1
 
 
-def createQuantitativeEventTree(directedEventTree, learningParameters):
+def create_quantitative_event_tree(directed_event_tree, learning_parameters):
     print("createQuantitativeEventTree")
     return 1
 
 
-def createQuantitativeFaultTree(directedFaultTree, learningParameters):
+def create_quantitative_fault_tree(directed_fault_tree, learning_parameters):
     print("createQuantitativeFaultTree")
     return 1
 
 
-def createQuantitativeBowTieFromTrees(quantitativeEventTree, quantitativeFaultTree):
+def create_quantitative_bowtie_from_trees(quantitative_event_tree, quantitative_fault_tree):
     print("createBowTie")
     return 1
 
 
-def printQuantitativeBowTie(quantitativeBowTie):
+def print_quantitative_bowtie(quantitative_bowtie):
     print("printQuantitativeBowTie")
     return 1
-
-
-def generate_trainingset_fault_tree(nr_events):
-    return [(x, y, random.randint(0, 1)) for x in range(0, nr_events) for y in range(0, nr_events)]
-
-
-def generate_trainingset_event_tree(nr_events):
-    return [(x, y, random.randint(0, 1)) for x in range(0, nr_events) for y in range(0, nr_events)]
 
 
 if __name__ == '__main__':
