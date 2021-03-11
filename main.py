@@ -9,6 +9,7 @@ import math
 import random
 
 from graph import Graph, Vertex, Edge
+from trainingset import TrainingSet
 
 
 def start():
@@ -41,12 +42,12 @@ def create_test_bowtie():
 
 def create_trainingset_fault_tree(test_bowtie):
     print("createTrainingSetFaultTree")
-    return 1
+    return TrainingSet([1])
 
 
 def create_trainingset_event_tree(test_bowtie):
     print("createTrainingSetEventTree")
-    return 1
+    return TrainingSet([1])
 
 
 def get_top_event(test_bowtie):
@@ -60,19 +61,17 @@ def get_learning_parameters():
 
 
 def create_undirected_tree(training_set):
-    weights = []
     events_size = training_set.get_events_size()
+    weights = [None]*events_size
     for i in range(0, events_size - 1):
-        weights[i] = []
+        weights[i] = [None]*events_size
         for j in range(1, events_size):
             weights[i][j] = compute_mutual_information(training_set, i, j)
 
     graph = Graph(False)
-    available_events = []
+    available_events = [True]*events_size
     available_events[0] = False
-    vertices = []
-    for i in range(1, events_size):
-        available_events[i] = True
+    vertices = [None]*events_size
     vertices[0] = Vertex(graph)
     graph.add_vertex(vertices[0])
     for step in range(1, events_size):
