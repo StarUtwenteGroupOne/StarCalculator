@@ -64,7 +64,7 @@ def create_test_bowtie(size=6):
         bowtie.add_edge(Edge(tail=top_events[0], head=neighbor))
 
         # Delete the now duplicate top event
-        del top_events[1]
+        bowtie.del_vertex(top_events[1])
 
     return bowtie
 
