@@ -1,2 +1,4 @@
 .idea
 venv
+__pycache__/graph.cpython-38.pyc
+__pycache__/trainingset.cpython-38.pyc
