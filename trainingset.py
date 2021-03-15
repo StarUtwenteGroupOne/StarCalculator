@@ -24,3 +24,5 @@ class TrainingSet:
             raise AttributeError("Event not in training set!")
         else:
             return list(zip(*self.observations))[i]
+
+
