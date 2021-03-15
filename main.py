@@ -144,14 +144,14 @@ def create_quantitative_fault_tree(directed_fault_tree, training_set_fault_tree)
     tr = training_set_fault_tree
     for v in G.vertices:
         cpt_i = []
-        parents = [tr.get_observations_by_event_name(v.label)]
+        vertices_set = [tr.get_observations_by_event_name(v.label)]
         helping_dict = {}
         for e in G.edges:
             if e.head == v:
-                parents.append(tr.get_observations_by_event_name(e.tail.label))
-        parents = np.array(parents).transpose()
-        total = parents.shape[0] + 2 ** (parents.shape[1] - 1)
-        for p in parents:
+                vertices_set.append(tr.get_observations_by_event_name(e.tail.label))
+        vertices_set = np.array(vertices_set).transpose()
+        total = vertices_set.shape[0] + 2 ** (vertices_set.shape[1] - 1)
+        for p in vertices_set:
             if helping_dict[p] is None:
                 helping_dict[p] = 1
             else:
