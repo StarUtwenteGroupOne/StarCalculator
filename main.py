@@ -125,16 +125,15 @@ def create_quantitative_event_tree(directed_event_tree, training_set_event_tree)
         for e in G.edges:
             if e.tail == vertex:
                 list2 = tr.get_observations_by_event_name(e.head.label)
-                n_i_j = 0
-
-                n_i = 0
+                number_instances_i_j = 0
+                number_instances_vertex = 0
                 for i in range(0, len(list1)):
                     if list1[i] == list2[i] and list2[i]:
-                        n_i_j += 1
+                        number_instances_i_j += 1
                     if list1[i]:
-                        n_i += 1
-                if n_i != 0:
-                    probability_of_happening_i.append(n_i_j / n_i)
+                        number_instances_vertex += 1
+                if number_instances_vertex != 0:
+                    probability_of_happening_i.append(number_instances_i_j / number_instances_vertex)
         probability_of_happening.append(probability_of_happening_i)
     print("createQuantitativeEventTree")
     return probability_of_happening
