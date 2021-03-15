@@ -2,7 +2,7 @@
 class TrainingSet:
 
     # The distinct events that are available in this class
-    event_names = []
+    event_names = [1,2]
 
     # The observations. A 2d table, where the lists inside are ordered by the
     # event_names above.
@@ -24,3 +24,16 @@ class TrainingSet:
             raise AttributeError("Event not in training set!")
         else:
             return list(zip(*self.observations))[i]
+
+
+    def compute_single_probability(self, event, event_state):
+        print("compute_single_probability")
+        return 1
+
+
+    def compute_combined_probability(self, event1, event1_state, event2, event2_state):
+        print("compute_combined_probability")
+        return 1
+
+    def get_events_size(self):
+        return len(self.event_names)
