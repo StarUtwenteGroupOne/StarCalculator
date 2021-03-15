@@ -11,6 +11,9 @@ import random
 from graph import Graph, Vertex, Edge
 from trainingset import TrainingSet
 
+# noinspection PyTypeChecker
+VertexList = list(Vertex)
+
 
 def start():
     test_bowtie = create_test_bowtie()
@@ -60,19 +63,18 @@ def get_learning_parameters():
     return 1
 
 
+# noinspection PyTypeChecker
 def create_undirected_tree(training_set):
     events_size = training_set.get_events_size()
-    weights = [None]*events_size
+    weights = [[0]*events_size for _ in range(events_size)]
     for i in range(0, events_size - 1):
-        weights[i] = [None]*events_size
         for j in range(1, events_size):
             weights[i][j] = compute_mutual_information(training_set, i, j)
 
     graph = Graph(False)
     available_events = [True]*events_size
     available_events[0] = False
-    vertices = [None]*events_size
-    vertices[0] = Vertex(graph)
+    vertices: VertexList = [Vertex(graph)] + [None for _ in range(events_size-1)]
     graph.add_vertex(vertices[0])
     for step in range(1, events_size):
         highest_i = -1
@@ -83,6 +85,7 @@ def create_undirected_tree(training_set):
                     if highest_i == -1 or weights[highest_i][highest_j] <= weights[i][j]:
                         highest_i = i
                         highest_j = j
+        available_events[highest_j] = False
         vertices[highest_j] = Vertex(graph)
         edge = Edge(vertices[highest_i], vertices[highest_j])
         graph.add_vertex(vertices[highest_j])
