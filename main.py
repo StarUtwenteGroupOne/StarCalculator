@@ -157,7 +157,7 @@ def create_quantitative_fault_tree(directed_fault_tree, training_set_fault_tree)
             else:
                 helping_dict[p] = helping_dict[p] + 1
         for k in helping_dict.keys():
-            cpt_i.append(helping_dict[k] / total)
+            cpt_i.append((helping_dict[k] + 1) / total)
         cpt.append(cpt_i)
     print("createQuantitativeFaultTree")
     return cpt

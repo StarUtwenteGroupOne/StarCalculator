@@ -1,6 +1,5 @@
 from graph import *
 from trainingset import *
-import numpy as np
 
 G = Graph(directed=True)
 v1 = Vertex(G, label="v1")
