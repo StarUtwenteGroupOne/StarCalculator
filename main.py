@@ -87,8 +87,9 @@ def create_fault_tree(size=3) -> Graph:
         if last_level_vertices:
             for last_level_vertex in last_level_vertices:
                 graph.add_edge(
-                    Edge(last_level_vertex,
-                         this_level_vertices[random.randint(len(this_level_vertices))]))
+                    Edge(tail=last_level_vertex,
+                         head=this_level_vertices[random.randint(len(this_level_vertices))],
+                         weight=random.random()))
 
         # Mark the Top event
         if len(this_level_vertices) == 1:
