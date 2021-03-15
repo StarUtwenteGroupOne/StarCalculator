@@ -5,7 +5,14 @@
 
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
+import math
 import random
+
+from graph import Graph, Vertex, Edge
+from trainingset import TrainingSet
+
+# noinspection PyTypeChecker
+VertexList = list(Vertex)
 
 
 def start():
@@ -14,7 +21,8 @@ def start():
     training_set_fault_tree = create_trainingset_fault_tree(test_bowtie)
     top_event = get_top_event(test_bowtie)
     learning_parameters = get_learning_parameters()
-    bowtie = create_quantitative_bowtie(training_set_event_tree, training_set_fault_tree, top_event, learning_parameters)
+    bowtie = create_quantitative_bowtie(training_set_event_tree, training_set_fault_tree, top_event,
+                                        learning_parameters)
     print_quantitative_bowtie(bowtie)
 
 
@@ -37,12 +45,12 @@ def create_test_bowtie():
 
 def create_trainingset_fault_tree(test_bowtie):
     print("createTrainingSetFaultTree")
-    return 1
+    return TrainingSet([1])
 
 
 def create_trainingset_event_tree(test_bowtie):
     print("createTrainingSetEventTree")
-    return 1
+    return TrainingSet([1])
 
 
 def get_top_event(test_bowtie):
@@ -55,9 +63,47 @@ def get_learning_parameters():
     return 1
 
 
+# noinspection PyTypeChecker
 def create_undirected_tree(training_set):
-    print("createUndirectedTree")
-    return 1
+    events_size = training_set.get_events_size()
+    weights = [[0]*events_size for _ in range(events_size)]
+    for i in range(0, events_size - 1):
+        for j in range(1, events_size):
+            weights[i][j] = compute_mutual_information(training_set, i, j)
+
+    graph = Graph(False)
+    available_events = [True]*events_size
+    available_events[0] = False
+    vertices: VertexList = [Vertex(graph)] + [None for _ in range(events_size-1)]
+    graph.add_vertex(vertices[0])
+    for step in range(1, events_size):
+        highest_i = -1
+        highest_j = -1
+        for i in range(0, events_size):
+            for j in range(1, events_size):
+                if not available_events[i] and available_events[j]:
+                    if highest_i == -1 or weights[highest_i][highest_j] <= weights[i][j]:
+                        highest_i = i
+                        highest_j = j
+        available_events[highest_j] = False
+        vertices[highest_j] = Vertex(graph)
+        edge = Edge(vertices[highest_i], vertices[highest_j])
+        graph.add_vertex(vertices[highest_j])
+        graph.add_edge(edge)
+    return graph
+
+
+def compute_mutual_information(training_set, event1, event2):
+    weight = 0
+    for event1_state in True, False:
+        for event2_state in True, False:
+            probability_event1 = training_set.compute_single_probability(event1, event1_state)
+            probability_event2 = training_set.compute_single_probability(event2, event2_state)
+            probability_event1_and_event2 = training_set.compute_combined_probability(event1, event1_state, event2,
+                                                                                      event2_state)
+            probability = probability_event1_and_event2 / (probability_event1 * probability_event2)
+            weight += probability_event1_and_event2 * math.log(probability, 10)
+    return weight
 
 
 def create_directed_tree(undirected_tree, top_event):
