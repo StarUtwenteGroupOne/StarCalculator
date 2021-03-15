@@ -7,6 +7,9 @@
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 import math
 import random
+import numpy as np
+from graph import *
+from trainingset import *
 
 from graph import Graph, Vertex, Edge
 from trainingset import TrainingSet
@@ -31,8 +34,8 @@ def create_quantitative_bowtie(training_set_event_tree, training_set_fault_tree,
     undirected_fault_tree = create_undirected_tree(training_set_fault_tree)
     directed_event_tree = create_directed_tree(undirected_event_tree, top_event)
     directed_fault_tree = create_directed_tree(undirected_fault_tree, top_event)
-    quantitative_event_tree = create_quantitative_event_tree(directed_event_tree, learning_parameters)
-    quantitative_fault_tree = create_quantitative_fault_tree(directed_fault_tree, learning_parameters)
+    quantitative_event_tree = create_quantitative_event_tree(directed_event_tree, training_set_event_tree)
+    quantitative_fault_tree = create_quantitative_fault_tree(directed_fault_tree, training_set_fault_tree)
     quantitative_bowtie = create_quantitative_bowtie_from_trees(quantitative_event_tree, quantitative_fault_tree)
     return quantitative_bowtie
 
@@ -111,14 +114,55 @@ def create_directed_tree(undirected_tree, top_event):
     return 1
 
 
-def create_quantitative_event_tree(directed_event_tree, learning_parameters):
+def create_quantitative_event_tree(directed_event_tree, training_set_event_tree):
+    probability_of_happening = []
+    G = directed_event_tree
+    tr = training_set_event_tree
+    for v in G.vertices:
+        vertex = v
+        probability_of_happening_i = []
+        list1 = tr.get_observations_by_event_name(v.label)
+        for e in G.edges:
+            if e.tail == vertex:
+                list2 = tr.get_observations_by_event_name(e.head.label)
+                number_instances_i_j = 0
+                number_instances_vertex = 0
+                for i in range(0, len(list1)):
+                    if list1[i] == list2[i] and list2[i]:
+                        number_instances_i_j += 1
+                    if list1[i]:
+                        number_instances_vertex += 1
+                if number_instances_vertex != 0:
+                    probability_of_happening_i.append(number_instances_i_j / number_instances_vertex)
+        probability_of_happening.append(probability_of_happening_i)
     print("createQuantitativeEventTree")
-    return 1
+    return probability_of_happening
 
 
-def create_quantitative_fault_tree(directed_fault_tree, learning_parameters):
+def create_quantitative_fault_tree(directed_fault_tree, training_set_fault_tree):
+    cpt = []
+    G = directed_fault_tree
+    tr = training_set_fault_tree
+    alpha = 1
+    for v in G.vertices:
+        cpt_i = []
+        vertices_set = [tr.get_observations_by_event_name(v.label)]
+        helping_dict = {}
+        for e in G.edges:
+            if e.head == v:
+                vertices_set.append(tr.get_observations_by_event_name(e.tail.label))
+        vertices_set = np.array(vertices_set).transpose()
+        total = vertices_set.shape[0] + (2 ** (vertices_set.shape[1] - 1)) * alpha
+        for p in vertices_set:
+            if helping_dict[p] is None:
+                helping_dict[p] = 1
+            else:
+                helping_dict[p] = helping_dict[p] + 1
+        for k in helping_dict.keys():
+            cpt_i.append((helping_dict[k] + alpha) / total)
+        cpt.append(cpt_i)
     print("createQuantitativeFaultTree")
-    return 1
+    return cpt
 
 
 def create_quantitative_bowtie_from_trees(quantitative_event_tree, quantitative_fault_tree):
