@@ -21,7 +21,9 @@ def start():
     training_set_fault_tree = create_trainingset_fault_tree(test_bowtie)
     top_event = get_top_event(test_bowtie)
     learning_parameters = get_learning_parameters()
-    bowtie = create_quantitative_bowtie(training_set_event_tree, training_set_fault_tree, top_event,
+    bowtie = create_quantitative_bowtie(training_set_event_tree,
+                                        training_set_fault_tree,
+                                        top_event,
                                         learning_parameters)
     print_quantitative_bowtie(bowtie)
 
@@ -76,15 +78,16 @@ def create_undirected_tree(training_set):
     available_events[0] = False
     vertices: VertexList = [Vertex(graph)] + [None for _ in range(events_size-1)]
     graph.add_vertex(vertices[0])
-    for step in range(1, events_size):
+    for _ in range(1, events_size):
         highest_i = -1
         highest_j = -1
         for i in range(0, events_size):
             for j in range(1, events_size):
-                if not available_events[i] and available_events[j]:
-                    if highest_i == -1 or weights[highest_i][highest_j] <= weights[i][j]:
-                        highest_i = i
-                        highest_j = j
+                if not available_events[i] and \
+                        available_events[j] and \
+                        (highest_i == -1 or weights[highest_i][highest_j] <= weights[i][j]):
+                    highest_i = i
+                    highest_j = j
         available_events[highest_j] = False
         vertices[highest_j] = Vertex(graph)
         edge = Edge(vertices[highest_i], vertices[highest_j])
