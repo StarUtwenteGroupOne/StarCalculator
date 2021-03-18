@@ -34,8 +34,10 @@ def create_quantitative_bowtie(training_set_event_tree, training_set_fault_tree,
     undirected_fault_tree = create_undirected_tree(training_set_fault_tree)
     directed_event_tree = create_directed_tree(undirected_event_tree, top_event)
     directed_fault_tree = create_directed_tree(undirected_fault_tree, top_event)
-    quantitative_event_tree = create_quantitative_event_tree(directed_event_tree, training_set_event_tree)
-    quantitative_fault_tree = create_quantitative_fault_tree(directed_fault_tree, training_set_fault_tree)
+    quantitative_event_tree, probability_of_event_tree = create_quantitative_event_tree(directed_event_tree,
+                                                                                        training_set_event_tree)
+    quantitative_fault_tree, probability_of_fault_tree = create_quantitative_fault_tree(directed_fault_tree,
+                                                                                        training_set_fault_tree)
     quantitative_bowtie = create_quantitative_bowtie_from_trees(quantitative_event_tree, quantitative_fault_tree)
     return quantitative_bowtie
 
@@ -134,9 +136,10 @@ def create_quantitative_event_tree(directed_event_tree, training_set_event_tree)
                         number_instances_vertex += 1
                 if number_instances_vertex != 0:
                     probability_of_happening_i.append(number_instances_i_j / number_instances_vertex)
+        v.probability.extend(probability_of_happening_i)
         probability_of_happening.append(probability_of_happening_i)
     print("createQuantitativeEventTree")
-    return probability_of_happening
+    return G, probability_of_happening
 
 
 def create_quantitative_fault_tree(directed_fault_tree, training_set_fault_tree):
@@ -160,9 +163,10 @@ def create_quantitative_fault_tree(directed_fault_tree, training_set_fault_tree)
                 helping_dict[p] = helping_dict[p] + 1
         for k in helping_dict.keys():
             cpt_i.append((helping_dict[k] + alpha) / total)
+        v.probability.extend(cpt_i)
         cpt.append(cpt_i)
     print("createQuantitativeFaultTree")
-    return cpt
+    return G, cpt
 
 
 def create_quantitative_bowtie_from_trees(quantitative_event_tree, quantitative_fault_tree):
