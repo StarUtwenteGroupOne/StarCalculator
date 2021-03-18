@@ -44,7 +44,7 @@ class Vertex(object):
         self.label = label
         self.colornum = 1000
         self._incidence = {}
-        self.probability = []
+        self.probability = {}
 
     def __repr__(self):
         """

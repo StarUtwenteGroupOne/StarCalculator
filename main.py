@@ -137,7 +137,7 @@ def create_quantitative_event_tree(directed_event_tree, training_set_event_tree)
                 if number_instances_vertex != 0:
                     probability_of_happening_i[e.head] = number_instances_i_j / number_instances_vertex
             e._weight = number_instances_i_j / number_instances_vertex
-        v.probability.extend(probability_of_happening_i)
+        v.probability = probability_of_happening_i
         probability_of_happening.append(probability_of_happening_i)
     print("createQuantitativeEventTree")
     return G, probability_of_happening
@@ -169,7 +169,7 @@ def create_quantitative_fault_tree(directed_fault_tree, training_set_fault_tree)
 
             for k in helping_dict.keys():
                 cpt_i[k] = (helping_dict[k] + alpha) / total
-            v.probability.extend(cpt_i)
+            v.probability = cpt_i
             cpt.append(cpt_i)
     print("createQuantitativeFaultTree")
     return G, cpt
