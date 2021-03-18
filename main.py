@@ -8,8 +8,6 @@
 import math
 import random
 import numpy as np
-from graph import *
-from trainingset import *
 
 from graph import Graph, Vertex, Edge
 from trainingset import TrainingSet
@@ -34,8 +32,8 @@ def start():
 def create_quantitative_bowtie(training_set_event_tree, training_set_fault_tree, top_event, learning_parameters):
     undirected_event_tree = create_undirected_tree(training_set_event_tree)
     undirected_fault_tree = create_undirected_tree(training_set_fault_tree)
-    directed_event_tree = create_directed_tree(undirected_event_tree, top_event)
-    directed_fault_tree = create_directed_tree(undirected_fault_tree, top_event)
+    directed_event_tree = create_directed_event_tree(undirected_event_tree, top_event)
+    directed_fault_tree = create_directed_fault_tree(undirected_fault_tree, top_event)
     quantitative_event_tree = create_quantitative_event_tree(directed_event_tree, training_set_event_tree)
     quantitative_fault_tree = create_quantitative_fault_tree(directed_fault_tree, training_set_fault_tree)
     quantitative_bowtie = create_quantitative_bowtie_from_trees(quantitative_event_tree, quantitative_fault_tree)
@@ -71,15 +69,15 @@ def get_learning_parameters():
 # noinspection PyTypeChecker
 def create_undirected_tree(training_set):
     events_size = training_set.get_events_size()
-    weights = [[0]*events_size for _ in range(events_size)]
+    weights = [[0] * events_size for _ in range(events_size)]
     for i in range(0, events_size - 1):
         for j in range(1, events_size):
             weights[i][j] = compute_mutual_information(training_set, i, j)
 
     graph = Graph(False)
-    available_events = [True]*events_size
+    available_events = [True] * events_size
     available_events[0] = False
-    vertices: VertexList = [Vertex(graph)] + [None for _ in range(events_size-1)]
+    vertices: VertexList = [Vertex(graph)] + [None for _ in range(events_size - 1)]
     graph.add_vertex(vertices[0])
     for _ in range(1, events_size):
         highest_i = -1
@@ -112,9 +110,68 @@ def compute_mutual_information(training_set, event1, event2):
     return weight
 
 
-def create_directed_tree(undirected_tree, top_event):
-    print("createDirectedTree")
+def create_directed_event_tree(undirected_event_tree: Graph, top_event: Vertex):
+    """
+    Creates a directed event tree out of an undirected event tree.
+    Doesn't use a deepcopy yet, which may give some problems
+
+    :return: A directed Event Tree of a bow tie.
+    """
+    result = undirected_event_tree
+
+    # Make the graph directed
+    result._directed = True
+
+    # Keep track of vertexes to check orientation for
+    vertexes_to_check_edge_orientation = {top_event}
+
+    # While there are still vertexes to check
+    while len(vertexes_to_check_edge_orientation) > 0:
+
+        # Pop one of the vertexes to check
+        v = vertexes_to_check_edge_orientation.pop()
+
+        # Check every edge incident to v
+        for e in v.incidence:
+            check_edge_direction(e, v)
+
+        # Update the set of vertexes to check based on the neighbours of v and their adjacency
+        for neighbour in v.neighbours:
+
+            # Check whether the neighbour is adjacend in the directed graph.
+            if v.graph.is_adjacent(v, neighbour):
+                vertexes_to_check_edge_orientation.add(neighbour)
+
+        # v has been checked and can be removed.
+        vertexes_to_check_edge_orientation.remove(v)
+    return result
+
+
+def create_directed_fault_tree(undirected_fault_tree: Graph, top_event: Vertex):
+    """
+    Creates a directed fault tree out of an undirected fault tree.
+    Doesn't use a deepcopy yet, which may give some problems
+
+    :return: A directed Fault Tree of a bow tie.
+    """
+    result = undirected_fault_tree
+
+    # Make the graph directed
+    result._directed = True
+
+    print("createDirectedFaultTree")
     return 1
+
+
+def check_edge_direction(edge: Edge, origin_vertex: Vertex):
+    """
+    Swaps the head and tail of an edge if the head is the origin vertex.
+
+    :return: An edge where the direction is swapped around.
+    """
+    if edge.head == origin_vertex:
+        edge._head = edge.other_end(origin_vertex)
+        edge._tail = origin_vertex
 
 
 def create_quantitative_event_tree(directed_event_tree, training_set_event_tree):
