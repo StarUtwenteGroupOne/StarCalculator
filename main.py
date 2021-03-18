@@ -42,7 +42,10 @@ def create_quantitative_bowtie(training_set_event_tree, training_set_fault_tree,
 
 def create_test_bowtie(size=6):
     print("createTestBowtie")
-    # A hardcoded fault tree
+
+    # The size needs to be one larger because we will merge the top events later.
+    size += 1
+
     fault_tree = create_fault_tree(ceil(size / 2))
     event_tree = create_event_tree(size - ceil(size / 2))
 
