@@ -45,7 +45,7 @@ def create_test_bowtie():
 
 def create_trainingset_fault_tree(test_bowtie):
     print("createTrainingSetFaultTree")
-    return TrainingSet([1])
+    return TrainingSet([[False,False,True,True],[False,True,False,True],[False,False,False,True]],{"a":1,"b":2,"c":3})
 
 
 def create_trainingset_event_tree(test_bowtie):
