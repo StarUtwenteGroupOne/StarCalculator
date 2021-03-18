@@ -8,6 +8,8 @@
 import math
 import random
 import numpy as np
+
+import graph_io
 from graph import *
 from trainingset import *
 from math import floor, ceil
@@ -18,8 +20,9 @@ from graph import Graph, Vertex, Edge
 from trainingset import TrainingSet
 
 # noinspection PyTypeChecker
-VertexList = list(Vertex)
+VertexList = [Vertex]
 
+TOP_EVENT_LABEL = "TE"
 
 def start():
     test_bowtie = create_test_bowtie()
@@ -52,55 +55,75 @@ def create_test_bowtie(size=6):
     fault_tree = create_fault_tree(ceil(size / 2))
     event_tree = create_event_tree(size - ceil(size / 2))
 
+    return create_quantitative_bowtie_from_trees(fault_tree, event_tree)
+
+
+def create_quantitative_bowtie_from_trees(event_tree, fault_tree):
     # And now we need to union the graph
     bowtie = Graph(directed=True)
 
     bowtie._v += fault_tree.vertices + event_tree.vertices
     bowtie._e += fault_tree.edges + event_tree.edges
 
+    for v in bowtie._v:
+        v._graph = bowtie
+
     top_events = []
     # Find the two top events:
     for vtx in bowtie.vertices:
-        if vtx.label == "TE":
+        if vtx.label == TOP_EVENT_LABEL:
             top_events.append(vtx)
 
     assert len(top_events) == 2
 
-    for neighbor in top_events[1].neighbours:
-        bowtie.add_edge(Edge(tail=top_events[0], head=neighbor))
+    for edge in top_events[1].incidence:
+        bowtie.add_edge(Edge(tail=top_events[0], head=edge.head, weight=edge.weight))
 
-        # Delete the now duplicate top event
-        bowtie.del_vertex(top_events[1])
+    # Delete the now duplicate top event
+    bowtie.del_vertex(top_events[1])
 
+    with open('./rand_bowtie.dot', 'w') as f:
+        graph_io.write_dot(bowtie, f, directed=True)
     return bowtie
 
 
 def create_fault_tree(size=3) -> Graph:
     level_sizes = []
+    orig_size = size
     next_level_size = 1  # We start at 1
-    while size > next_level_size + 1:
+    while orig_size > 0:
         level_sizes.append(next_level_size)
+        orig_size -= next_level_size
+        next_level_size += 1
+
 
     level_sizes = reversed(level_sizes)
 
     graph = Graph(directed=True)
 
-    last_level_vertices = set()
+    last_level_vertices = []
     for level_size in level_sizes:
         this_level_vertices = [Vertex(graph) for _ in range(level_size)]
+
+        # adding to the graph
+        [graph.add_vertex(v) for v in this_level_vertices]
 
         # add connection to previous level, if already defined
         if last_level_vertices:
             for last_level_vertex in last_level_vertices:
                 graph.add_edge(
                     Edge(tail=last_level_vertex,
-                         head=this_level_vertices[random.randint(len(this_level_vertices))],
+                         head=this_level_vertices[random.randint(0, len(this_level_vertices) - 1)],
                          weight=random.random()))
+
+        last_level_vertices = this_level_vertices
 
         # Mark the Top event
         if len(this_level_vertices) == 1:
-            this_level_vertices[0].label = "TE"
+            this_level_vertices[0].label = TOP_EVENT_LABEL
 
+    with open('./rand_fault_tree.dot', 'w') as f:
+        graph_io.write_dot(graph, f, directed=True)
     return graph
 
 
@@ -112,6 +135,9 @@ def create_event_tree(size=3):
         temp = edge.head
         edge._head = edge.tail
         edge._tail = temp
+
+    with open('./rand_event_tree.dot', 'w') as f:
+        graph_io.write_dot(event_tree_reversed, f, directed=True)
     return event_tree_reversed
 
 
@@ -234,10 +260,6 @@ def create_quantitative_fault_tree(directed_fault_tree, training_set_fault_tree)
     return cpt
 
 
-def create_quantitative_bowtie_from_trees(quantitative_event_tree, quantitative_fault_tree):
-    print("createBowTie")
-    return 1
-
 
 def print_quantitative_bowtie(quantitative_bowtie):
     print("printQuantitativeBowTie")
@@ -245,4 +267,7 @@ def print_quantitative_bowtie(quantitative_bowtie):
 
 
 if __name__ == '__main__':
-    start()
+    et = create_event_tree(20)
+    ft = create_fault_tree(20)
+
+    create_quantitative_bowtie_from_trees(et, ft)
