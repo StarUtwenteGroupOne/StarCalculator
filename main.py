@@ -20,8 +20,8 @@ VertexList = list(Vertex)
 
 def start():
     test_bowtie = create_test_bowtie()
-    training_set_event_tree = create_event_tree(test_bowtie)
-    training_set_fault_tree = create_fault_tree(test_bowtie)
+    training_set_event_tree = create_event_tree_trainingset(test_bowtie)
+    training_set_fault_tree = create_fault_tree_trainingset(test_bowtie)
     top_event = get_top_event(test_bowtie)
     learning_parameters = get_learning_parameters()
     bowtie = create_quantitative_bowtie(training_set_event_tree, training_set_fault_tree, top_event,
