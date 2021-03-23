@@ -243,7 +243,10 @@ def create_quantitative_event_tree(directed_event_tree, training_set_event_tree)
     with open('./create_quantitative_event_tree.dot', 'w') as f:
         for v in G.vertices:
             for k in v.probability.keys():
-                v.label += f" {k.label} -> {v.probability[k]}"
+                v.new_label += f" {k.label} -> {v.probability[k]}"
+        for v in G.vertices:
+            v.label = v.new_label
+
         graph_io.write_dot(G, f, True)
     return G, probability_of_happening
 
