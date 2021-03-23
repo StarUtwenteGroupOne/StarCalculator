@@ -50,6 +50,6 @@ tr = TrainingSet(training_set={
     'event_names': [v.label for v in G.vertices],
     'observations': [
         [randint(0, 1) for _ in G.vertices]
-        for _ in range(1000)
+        for _ in range(20)
     ]
 })

@@ -303,15 +303,20 @@ def print_quantitative_bowtie(quantitative_bowtie):
 if __name__ == '__main__':
     et = create_event_tree(20)
     ft = create_fault_tree(20)
+
+    rv = None
+
+    # with open('tmp_graph.dot', 'r') as f:
+    #     rv = graph_io.load_graph(f, Graph)
+
     (_, _) = create_quantitative_event_tree(directed_event_tree=G, training_set_event_tree=tr)
 
-    reversed = G
 
-    # Reverse all edges in event_tree_reversed
-    for edge in reversed.edges:
-        temp = edge.head
-        edge._head = edge.tail
-        edge._tail = temp
-    (_, _) = create_quantitative_event_tree(directed_event_tree=reversed, training_set_event_tree=tr)
-
-    create_quantitative_bowtie_from_trees(et, ft)
+    # # Reverse all edges in event_tree_reversed
+    # for edge in rv.edges:
+    #     temp = edge.head
+    #     edge._head = edge.tail
+    #     edge._tail = temp
+    # (_, _) = create_quantitative_fault_tree(rv, tr)
+    #
+    # create_quantitative_bowtie_from_trees(et, ft)
