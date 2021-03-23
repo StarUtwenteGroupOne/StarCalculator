@@ -1,4 +1,4 @@
-from random import random
+from random import random, randint
 
 from graph import *
 from trainingset import *
@@ -49,7 +49,7 @@ print(G.edges)
 tr = TrainingSet(training_set={
     'event_names': [v.label for v in G.vertices],
     'observations': [
-        [random()*0.0001 for _ in G.vertices]
+        [randint(0, 1) for _ in G.vertices]
         for _ in range(1000)
     ]
 

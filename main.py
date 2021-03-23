@@ -281,6 +281,16 @@ def create_quantitative_fault_tree(directed_fault_tree, training_set_fault_tree)
             v.probability = cpt_i
             cpt.append(cpt_i)
     print("createQuantitativeFaultTree")
+
+    with open('./create_quantitative_fault_tree.dot', 'w') as f:
+        for v in G.vertices:
+            v.new_label = f"[{v.label}]"
+            for k in v.probability.keys():
+                v.new_label += f" {k.label} -> {v.probability[k]}"
+        for v in G.vertices:
+            v.label = v.new_label
+
+        graph_io.write_dot(G, f, True)
     return G, cpt
 
 
