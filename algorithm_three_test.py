@@ -52,5 +52,4 @@ tr = TrainingSet(training_set={
         [randint(0, 1) for _ in G.vertices]
         for _ in range(1000)
     ]
-
 })

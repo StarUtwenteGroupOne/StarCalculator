@@ -305,4 +305,13 @@ if __name__ == '__main__':
     ft = create_fault_tree(20)
     (_, _) = create_quantitative_event_tree(directed_event_tree=G, training_set_event_tree=tr)
 
+    reversed = G
+
+    # Reverse all edges in event_tree_reversed
+    for edge in reversed.edges:
+        temp = edge.head
+        edge._head = edge.tail
+        edge._tail = temp
+    (_, _) = create_quantitative_event_tree(directed_event_tree=reversed, training_set_event_tree=tr)
+
     create_quantitative_bowtie_from_trees(et, ft)
