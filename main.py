@@ -10,6 +10,7 @@ import random
 import numpy as np
 
 import graph_io
+from algorithm_three_test import tr, G
 from graph import *
 from trainingset import *
 from math import floor, ceil
@@ -143,12 +144,14 @@ def create_event_tree(size=3):
     return event_tree_reversed
 
 
-def create_fault_tree_trainingset(test_bowtie):
+def create_fault_tree_trainingset(test_fault_tree):
     print("createTrainingSetFaultTree")
+
+
     return TrainingSet([1])
 
 
-def create_event_tree_trainingset(test_bowtie):
+def create_event_tree_trainingset(test_event_tree):
     print("createTrainingSetEventTree")
     return TrainingSet([1])
 
@@ -219,22 +222,29 @@ def create_quantitative_event_tree(directed_event_tree, training_set_event_tree)
         vertex = v
         probability_of_happening_i = {}
         list1 = tr.get_observations_by_event_name(v.label)
-        for e in G.edges:
-            if e.tail == vertex:
-                list2 = tr.get_observations_by_event_name(e.head.label)
-                number_instances_i_j = 0
-                number_instances_vertex = 0
-                for i in range(0, len(list1)):
-                    if list1[i] == list2[i] and list2[i]:
-                        number_instances_i_j += 1
-                    if list1[i]:
-                        number_instances_vertex += 1
-                if number_instances_vertex != 0:
-                    probability_of_happening_i[e.head] = number_instances_i_j / number_instances_vertex
+        for e in v.incidence:
+        # for e in G.edges:
+        #     if e.tail == vertex:
+            list2 = tr.get_observations_by_event_name(e.head.label)
+            number_instances_i_j = 0
+            number_instances_vertex = 0
+            for i in range(0, len(list1)):
+                if list1[i] == list2[i] and list2[i]:
+                    number_instances_i_j += 1
+                if list1[i]:
+                    number_instances_vertex += 1
+            if number_instances_vertex != 0:
+                probability_of_happening_i[e.head] = number_instances_i_j / number_instances_vertex
             e._weight = number_instances_i_j / number_instances_vertex
         v.probability = probability_of_happening_i
         probability_of_happening.append(probability_of_happening_i)
     print("createQuantitativeEventTree")
+
+    with open('./create_quantitative_event_tree.dot', 'w') as f:
+        for v in G.vertices:
+            for k in v.probability.keys():
+                v.label += f" {k.label} -> {v.probability[k]}"
+        graph_io.write_dot(G, f, True)
     return G, probability_of_happening
 
 
@@ -279,5 +289,6 @@ def print_quantitative_bowtie(quantitative_bowtie):
 if __name__ == '__main__':
     et = create_event_tree(20)
     ft = create_fault_tree(20)
+    (_, _) = create_quantitative_event_tree(directed_event_tree=G, training_set_event_tree=tr)
 
     create_quantitative_bowtie_from_trees(et, ft)

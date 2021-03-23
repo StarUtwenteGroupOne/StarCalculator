@@ -10,6 +10,12 @@ class TrainingSet:
 
     def __init__(self, training_set=None, event_tree=None, fault_tree=None):
         if training_set:
+            assert 'event_names' in training_set
+            assert 'observations' in training_set
+            print(training_set['event_names'])
+            self.event_names = training_set['event_names']
+            self.observations = training_set['observations']
+
             observations = training_set
         elif event_tree:
             pass
@@ -19,11 +25,10 @@ class TrainingSet:
             raise AttributeError("Fill in at least one of the arguments")
 
     def get_observations_by_event_name(self, event_name):
-        i = self.event_names.index(event_name)
-        if not i:
+        if event_name not in self.event_names:
             raise AttributeError("Event not in training set!")
         else:
-            return list(zip(*self.observations))[i]
+            return list(zip(*self.observations))[self.event_names.index(event_name)]
 
 
     def compute_single_probability(self, event, event_state):
