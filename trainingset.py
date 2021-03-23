@@ -1,4 +1,3 @@
-
 class TrainingSet:
     # The distinct events that are available in this class
     event_names = {}
@@ -23,15 +22,23 @@ class TrainingSet:
         else:
             return list(zip(*self.observations))[i]
 
-
     def compute_single_probability(self, event_index, event_state):
-        print("compute_single_probability")
-        return 1
-
+        observations = 0
+        correspondingObservations = 0
+        for observation in self.observations:
+            observations += 1
+            if observation[event_index] == event_state:
+                correspondingObservations += 1
+        return correspondingObservations / observations
 
     def compute_combined_probability(self, event1_index, event1_state, event2_index, event2_state):
-        print("compute_combined_probability")
-        return 1
+        observations = 0
+        correspondingObservations = 0
+        for observation in self.observations:
+            observations += 1
+            if observation[event1_index] == event1_state and observation[event2_index] == event2_state:
+                correspondingObservations += 1
+        return correspondingObservations / observations
 
     def get_events_size(self):
         return len(self.event_names)
