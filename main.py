@@ -119,14 +119,12 @@ def create_directed_event_tree(undirected_event_tree: Graph, top_event: Vertex):
     """
     result = undirected_event_tree
 
-    # Make the graph directed
-    result._directed = True
-
-    # Keep track of vertexes to check orientation for
+    # Keep track of vertexes which have been checked
     vertexes_to_check_edge_orientation = {top_event}
+    checked_vertexes = {}
 
     # While there are still vertexes to check
-    while len(vertexes_to_check_edge_orientation) > 0:
+    while len(checked_vertexes) < len(result.vertices):
 
         # Pop one of the vertexes to check
         v = vertexes_to_check_edge_orientation.pop()
@@ -138,12 +136,17 @@ def create_directed_event_tree(undirected_event_tree: Graph, top_event: Vertex):
         # Update the set of vertexes to check based on the neighbours of v and their adjacency
         for neighbour in v.neighbours:
 
-            # Check whether the neighbour is adjacend in the directed graph.
+            # Check whether the neighbour is adjacent in the directed graph.
             if v.graph.is_adjacent(v, neighbour):
                 vertexes_to_check_edge_orientation.add(neighbour)
 
-        # v has been checked and can be removed.
+        # v has been checked
         vertexes_to_check_edge_orientation.remove(v)
+        checked_vertexes += v
+
+    # The graph is now directed
+    result._directed = True
+
     return result
 
 
