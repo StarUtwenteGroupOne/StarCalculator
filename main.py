@@ -181,16 +181,16 @@ def treat_as_parent(child: Vertex, articulation_point: Vertex):
                 check_potential_articulation_point_fault_tree(child_edge)
 
 
-def determine_independence_of_parent_and_child(parent: Vertex, articulation_point: Vertex, child: Vertex):
+def determine_independence_of_parent_and_child(parent: Vertex, articulation_point: Vertex, child: Vertex, edge: Edge):
     yes_or_no = input("Are " + parent.label + " and " + child.label + "independend? (y/n)")
     while not (yes_or_no == "y" or yes_or_no == "n"):
         yes_or_no = input("Wrong input! Are " + parent.label + " and " + child.label + "independend? (y/n)")
     if yes_or_no == "y":
-        check_edge_direction_event_tree(e, articulation_point)
+        check_edge_direction_event_tree(edge, articulation_point)
         if not is_leaf(child):
             treat_as_parent(child, articulation_point)
     elif yes_or_no == "n":
-        check_edge_direction_event_tree(e, child)
+        check_edge_direction_event_tree(edge, child)
         if not is_leaf(child):
             check_potential_articulation_point_fault_tree(e)
 
@@ -201,22 +201,7 @@ def check_potential_articulation_point_fault_tree(parent_edge: Edge):
     for e in articulation_point.incidence:
         child = e.other_end(articulation_point)
         if not child == parent:
-            determine_independence_of_parent_and_child(parent, articulation_point, child)
-
-
-def get_potential_articulation_point_from_just_oriented_edge(edge: Edge, parent: Vertex):
-    """
-    Returns a list of edge tuples (parent_edge and child_edge)
-    if a just oriented edge leads to a potential articulation point.
-
-    :return:
-    """
-    articulation_vertex = edge.other_end(parent)
-    result = list()
-    for e in articulation_vertex.incidence:
-        if not e.other_end(articulation_vertex) == parent:
-            result += (edge, e)
-    return result
+            determine_independence_of_parent_and_child(parent, articulation_point, child, e)
 
 
 def check_edge_direction_event_tree(edge: Edge, origin_vertex: Vertex):
