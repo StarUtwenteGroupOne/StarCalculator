@@ -95,16 +95,18 @@ def create_fault_tree(size=3) -> Graph:
     orig_size = size
     next_level_size = 1  # We start at 1
     while orig_size > 0:
-        level_sizes.append(next_level_size)
+        level_sizes.append(min(orig_size, next_level_size))
         orig_size -= next_level_size
         next_level_size += 1
 
 
-    level_sizes = reversed(level_sizes)
+    level_sizes.reverse()
 
     graph = Graph(directed=True)
 
     last_level_vertices = []
+
+    set_top_event = False
     for level_size in level_sizes:
         this_level_vertices = [Vertex(graph) for _ in range(level_size)]
 
@@ -122,8 +124,9 @@ def create_fault_tree(size=3) -> Graph:
         last_level_vertices = this_level_vertices
 
         # Mark the Top event
-        if len(this_level_vertices) == 1:
+        if not set_top_event:
             this_level_vertices[0].label = TOP_EVENT_LABEL
+            set_top_event = True
 
     with open('./rand_fault_tree.dot', 'w') as f:
         graph_io.write_dot(graph, f, directed=True)
@@ -240,8 +243,12 @@ def create_quantitative_event_tree(directed_event_tree, training_set_event_tree)
 
     with open('./create_quantitative_event_tree.dot', 'w') as f:
         for v in G.vertices:
+            v.new_label = f"[{v.label}]"
             for k in v.probability.keys():
-                v.label += f" {k.label} -> {v.probability[k]}"
+                v.new_label += f" {k.label} -> {v.probability[k]}"
+        for v in G.vertices:
+            v.label = v.new_label
+
         graph_io.write_dot(G, f, True)
     return G, probability_of_happening
 
@@ -275,6 +282,16 @@ def create_quantitative_fault_tree(directed_fault_tree, training_set_fault_tree)
             v.probability = cpt_i
             cpt.append(cpt_i)
     print("createQuantitativeFaultTree")
+
+    with open('./create_quantitative_fault_tree.dot', 'w') as f:
+        for v in G.vertices:
+            v.new_label = f"[{v.label}]"
+            for k in v.probability.keys():
+                v.new_label += f" {k.label} -> {v.probability[k]}"
+        for v in G.vertices:
+            v.label = v.new_label
+
+        graph_io.write_dot(G, f, True)
     return G, cpt
 
 
@@ -285,9 +302,15 @@ def print_quantitative_bowtie(quantitative_bowtie):
 
 
 if __name__ == '__main__':
-    et = create_event_tree(20)
-    ft = create_fault_tree(20)
-    print(tr.observations)
-    (_, _) = create_quantitative_fault_tree(directed_event_tree=G, training_set_event_tree=tr)
+    et = create_event_tree(10)
+    ft = create_fault_tree(11)
+
+    (_, _) = create_quantitative_event_tree(directed_event_tree=G, training_set_event_tree=tr)
+
+    tr.event_names = [v.label for v in ft.vertices]
+
+    print(tr.event_names)
+
+    (_, _) = create_quantitative_fault_tree(ft, tr)
 
     create_quantitative_bowtie_from_trees(et, ft)

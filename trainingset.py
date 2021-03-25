@@ -26,6 +26,7 @@ class TrainingSet:
 
     def get_observations_by_event_name(self, event_name):
         if event_name not in self.event_names:
+            print(event_name)
             raise AttributeError("Event not in training set!")
         else:
             return list(zip(*self.observations))[self.event_names.index(event_name)]
