@@ -4,7 +4,7 @@ from random import randint
 class TrainingSet:
 
     # The distinct events that are available in this class
-    event_names = [1,2]
+    event_names = [1, 2]
 
     # The observations. A 2d table, where the lists inside are ordered by the
     # event_names above.
