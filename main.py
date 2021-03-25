@@ -95,12 +95,12 @@ def create_fault_tree(size=3) -> Graph:
     orig_size = size
     next_level_size = 1  # We start at 1
     while orig_size > 0:
-        level_sizes.append(next_level_size)
+        level_sizes.append(min(orig_size, next_level_size))
         orig_size -= next_level_size
         next_level_size += 1
 
 
-    level_sizes = reversed(level_sizes)
+    level_sizes.reverse()
 
     graph = Graph(directed=True)
 
@@ -122,7 +122,7 @@ def create_fault_tree(size=3) -> Graph:
         last_level_vertices = this_level_vertices
 
         # Mark the Top event
-        if len(this_level_vertices) == 1:
+        if level_sizes.index(level_size) == 0:
             this_level_vertices[0].label = TOP_EVENT_LABEL
 
     with open('./rand_fault_tree.dot', 'w') as f:
@@ -301,22 +301,15 @@ def print_quantitative_bowtie(quantitative_bowtie):
 
 
 if __name__ == '__main__':
-    et = create_event_tree(20)
-    ft = create_fault_tree(20)
-
-    rv = None
-
-    # with open('tmp_graph.dot', 'r') as f:
-    #     rv = graph_io.load_graph(f, Graph)
+    et = create_event_tree(10)
+    ft = create_fault_tree(11)
 
     (_, _) = create_quantitative_event_tree(directed_event_tree=G, training_set_event_tree=tr)
 
+    tr.event_names = [v.label for v in ft.vertices]
 
-    # # Reverse all edges in event_tree_reversed
-    # for edge in rv.edges:
-    #     temp = edge.head
-    #     edge._head = edge.tail
-    #     edge._tail = temp
-    # (_, _) = create_quantitative_fault_tree(rv, tr)
-    #
-    # create_quantitative_bowtie_from_trees(et, ft)
+    print(tr.event_names)
+
+    (_, _) = create_quantitative_fault_tree(ft, tr)
+
+    create_quantitative_bowtie_from_trees(et, ft)
