@@ -272,10 +272,11 @@ def create_quantitative_fault_tree(directed_fault_tree, training_set_fault_tree)
             total = vertices_set.shape[0] + (2 ** (vertices_set.shape[1] - 1)) * alpha
 
             for p in vertices_set:
-                if helping_dict[p.tobytes()] is None:
-                    helping_dict[p.tobytes()] = 1
+                p_as_np = np.array(p)
+                if not (repr(p_as_np) in helping_dict.keys()):
+                    helping_dict[repr(p_as_np)] = 1
                 else:
-                    helping_dict[p.tobytes()] = helping_dict[p.tobytes()] + 1
+                    helping_dict[repr(p_as_np)] = helping_dict[repr(p_as_np)] + 1
 
             for k in helping_dict.keys():
                 cpt_i[k] = (helping_dict[k] + alpha) / total
