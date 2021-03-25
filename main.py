@@ -83,7 +83,7 @@ def create_quantitative_bowtie_from_trees(event_tree, fault_tree):
     # Delete the now duplicate top event
     bowtie.del_vertex(top_events[1])
 
-    print_quantitative_bowtie(bowtie, './rand_bowtie.dot')
+    print_quantitative_bowtie(bowtie, './bowtie.dot')
     return bowtie
 
 
