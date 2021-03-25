@@ -10,12 +10,8 @@ import random
 import numpy as np
 
 import graph_io
-from algorithm_three_test import tr, G
-from graph import *
 from trainingset import *
-from math import floor, ceil
-
-from graph import Graph, Vertex, Edge
+from math import ceil
 
 from graph import Graph, Vertex, Edge
 from trainingset import TrainingSet
@@ -243,15 +239,7 @@ def create_quantitative_event_tree(directed_event_tree, training_set_event_tree)
         probability_of_happening.append(probability_of_happening_i)
     print("createQuantitativeEventTree")
 
-    with open('./create_quantitative_event_tree.dot', 'w') as f:
-        for v in G.vertices:
-            v.new_label = f"[{v.label}]"
-            for k in v.probability.keys():
-                v.new_label += f" {k.label} -> {v.probability[k]}"
-        for v in G.vertices:
-            v.label = v.new_label
-
-        graph_io.write_dot(G, f, True)
+    print_quantitative_bowtie(G, './create_quantitative_event_tree.dot')
     return G, probability_of_happening
 
 
@@ -285,29 +273,30 @@ def create_quantitative_fault_tree(directed_fault_tree, training_set_fault_tree)
             cpt.append(cpt_i)
     print("createQuantitativeFaultTree")
 
-    with open('./create_quantitative_fault_tree.dot', 'w') as f:
-        for v in G.vertices:
-            v.new_label = f"[{v.label}]"
-            for k in v.probability.keys():
-                v.new_label += f" {k.label} -> {v.probability[k]}"
-        for v in G.vertices:
-            v.label = v.new_label
-
-        graph_io.write_dot(G, f, True)
+    print_quantitative_bowtie(G, './create_quantitative_fault_tree.dot')
     return G, cpt
 
 
+def print_quantitative_bowtie(quantitative_bowtie, filename):
+    with open(filename, 'w') as f:
+        for v in quantitative_bowtie.vertices:
+            v.new_label = f"[{v.label}]"
+            for k in v.probability.keys():
+                v.new_label += f" {k.label} -> {v.probability[k]}"
+        for v in quantitative_bowtie.vertices:
+            v.label = v.new_label
 
-def print_quantitative_bowtie(quantitative_bowtie):
-    print("printQuantitativeBowTie")
-    return 1
+        graph_io.write_dot(quantitative_bowtie, f, True)
+
 
 
 if __name__ == '__main__':
-    et = create_event_tree(10)
+    et = create_event_tree(11)
     ft = create_fault_tree(11)
 
-    (_, _) = create_quantitative_event_tree(directed_event_tree=G, training_set_event_tree=tr)
+    tr = create_bogus_trainingset(et)
+
+    (_, _) = create_quantitative_event_tree(directed_event_tree=et, training_set_event_tree=tr)
 
     tr.event_names = [v.label for v in ft.vertices]
 
