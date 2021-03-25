@@ -338,6 +338,22 @@ class Graph(object):
 
         return self
 
+    def deepcopy(self):
+        graph = Graph(directed=self.directed)
+
+        for v in self.vertices:
+            new_v = Vertex(graph=graph, label=v.label)
+            new_v.probability = v.probability
+            graph.add_vertex(new_v)
+        for e in self.edges:
+            graph.add_edge(
+                Edge(
+                    tail=graph.vertices[self.vertices.index(e.tail)],
+                    head=graph.vertices[self.vertices.index(e.head)],
+                    weight=e.weight
+                ))
+        return graph
+
     def find_edge(self, u: "Vertex", v: "Vertex") -> Set["Edge"]:
         """
         Tries to find edges between two vertices.

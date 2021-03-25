@@ -67,6 +67,8 @@ def create_quantitative_bowtie_from_trees(event_tree, fault_tree):
     for v in bowtie._v:
         v._graph = bowtie
 
+    print([v.label for v in bowtie.vertices])
+
     top_events = []
     # Find the two top events:
     for vtx in bowtie.vertices:
@@ -81,8 +83,7 @@ def create_quantitative_bowtie_from_trees(event_tree, fault_tree):
     # Delete the now duplicate top event
     bowtie.del_vertex(top_events[1])
 
-    with open('./rand_bowtie.dot', 'w') as f:
-        graph_io.write_dot(bowtie, f, directed=True)
+    print_quantitative_bowtie(bowtie, './rand_bowtie.dot')
     return bowtie
 
 
@@ -102,7 +103,7 @@ def create_fault_tree(size=3) -> Graph:
 
     last_level_vertices = []
 
-    set_top_event = False
+    set_top_event = 0
     for level_size in level_sizes:
         this_level_vertices = [Vertex(graph) for _ in range(level_size)]
 
@@ -120,9 +121,9 @@ def create_fault_tree(size=3) -> Graph:
         last_level_vertices = this_level_vertices
 
         # Mark the Top event
-        if not set_top_event:
+        if set_top_event == len(level_sizes) - 1:
             this_level_vertices[0].label = TOP_EVENT_LABEL
-            set_top_event = True
+        set_top_event += 1
 
     with open('./rand_fault_tree.dot', 'w') as f:
         graph_io.write_dot(graph, f, directed=True)
@@ -261,14 +262,15 @@ def create_quantitative_fault_tree(directed_fault_tree, training_set_fault_tree)
 
             for p in vertices_set:
                 p_as_np = np.array(p)
-                if not (repr(p_as_np) in helping_dict.keys()):
-                    helping_dict[repr(p_as_np)] = 1
+                if not (str(p_as_np) in helping_dict.keys()):
+                    helping_dict[str(p_as_np)] = 1
                 else:
-                    helping_dict[repr(p_as_np)] = helping_dict[repr(p_as_np)] + 1
+                    helping_dict[str(p_as_np)] = helping_dict[str(p_as_np)] + 1
 
             for k in helping_dict.keys():
                 cpt_i[k] = (helping_dict[k] + alpha) / total
             v.probability = cpt_i
+
             cpt.append(cpt_i)
     print("createQuantitativeFaultTree")
 
@@ -277,21 +279,35 @@ def create_quantitative_fault_tree(directed_fault_tree, training_set_fault_tree)
 
 
 def print_quantitative_bowtie(quantitative_bowtie, filename):
+    graph = quantitative_bowtie.deepcopy()
+
     with open(filename, 'w') as f:
-        for v in quantitative_bowtie.vertices:
+        for v in graph.vertices:
             v.new_label = f"[{v.label}]"
+            # print(v.probability)
             for k in v.probability.keys():
-                v.new_label += f" {k.label} -> {v.probability[k]}"
-        for v in quantitative_bowtie.vertices:
+                print(type(k))
+                if isinstance(k, Vertex):
+                    v.new_label += f" {k.label} -> {v.probability[k]}"
+                elif isinstance(k, str):
+                    v.new_label += f"\n {k} -> {v.probability[k]}"
+                else:
+                    v.new_label += f" {k} -> {v.probability[k]}"
+        for v in graph.vertices:
             v.label = v.new_label
 
-        graph_io.write_dot(quantitative_bowtie, f, True)
+        graph_io.write_dot(graph, f, True)
+
+
+
+
+
 
 
 
 if __name__ == '__main__':
-    et = create_event_tree(11)
-    ft = create_fault_tree(11)
+    et = create_event_tree(10)
+    ft = create_fault_tree(10)
 
     tr = create_bogus_trainingset(et)
 
