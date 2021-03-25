@@ -1,3 +1,6 @@
+from random import randint
+
+
 class TrainingSet:
 
     # The distinct events that are available in this class
@@ -42,3 +45,13 @@ class TrainingSet:
 
     def get_events_size(self):
         return len(self.event_names)
+
+
+def create_bogus_trainingset(et_or_ft):
+    return TrainingSet(training_set={
+        'event_names': [v.label for v in et_or_ft.vertices],
+        'observations': [
+            [randint(0, 1) for _ in et_or_ft.vertices]
+            for _ in range(20)
+        ]
+    })
