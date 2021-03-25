@@ -105,6 +105,8 @@ def create_fault_tree(size=3) -> Graph:
     graph = Graph(directed=True)
 
     last_level_vertices = []
+
+    set_top_event = False
     for level_size in level_sizes:
         this_level_vertices = [Vertex(graph) for _ in range(level_size)]
 
@@ -122,8 +124,9 @@ def create_fault_tree(size=3) -> Graph:
         last_level_vertices = this_level_vertices
 
         # Mark the Top event
-        if level_sizes.index(level_size) == 0:
+        if not set_top_event:
             this_level_vertices[0].label = TOP_EVENT_LABEL
+            set_top_event = True
 
     with open('./rand_fault_tree.dot', 'w') as f:
         graph_io.write_dot(graph, f, directed=True)
