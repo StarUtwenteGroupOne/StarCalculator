@@ -6,7 +6,6 @@
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 import math
-import random
 import numpy as np
 
 from graph import Graph, Vertex, Edge
@@ -175,7 +174,7 @@ def orient_top_event_for_fault_tree(parent: Vertex):
 
 def treat_as_parent(child: Vertex, articulation_point: Vertex):
     for child_edge in child.incidence:
-        if not child_edge.other_end() == articulation_point:
+        if not child_edge.other_end(child) == articulation_point:
             check_edge_direction_event_tree(child_edge, child_edge.other_end(child))
             if not is_leaf(child_edge.other_end(child)):
                 check_potential_articulation_point_fault_tree(child_edge)
@@ -192,7 +191,7 @@ def determine_independence_of_parent_and_child(parent: Vertex, articulation_poin
     elif yes_or_no == "n":
         check_edge_direction_event_tree(edge, child)
         if not is_leaf(child):
-            check_potential_articulation_point_fault_tree(e)
+            check_potential_articulation_point_fault_tree(edge)
 
 
 def check_potential_articulation_point_fault_tree(parent_edge: Edge):
