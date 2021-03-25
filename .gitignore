@@ -1,14 +1,4 @@
 .idea
 venv
-<<<<<<< HEAD
-__pycache__/graph.cpython-38.pyc
-__pycache__/trainingset.cpython-38.pyc
-create_quantitative_event_tree.dot
-rand_bowtie.dot
-rand_event_tree.dot
-rand_fault_tree.dot
-__pycache__/algorithm_three_test.cpython-38.pyc
-__pycache__/graph_io.cpython-38.pyc
-=======
+*.dot
 __pycache__
->>>>>>> 0e79a86bc6f6e110bc1307796d11cb8b77562e67
