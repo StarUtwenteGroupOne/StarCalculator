@@ -133,7 +133,7 @@ def create_directed_event_tree(undirected_event_tree: Graph, top_event: Vertex):
 
         # Check every edge incident to v and add it to the vertexes which need to be checked.
         for e in v.incidence:
-            if not checked_vertexes.__contains__(e.other_end(v)):
+            if e.other_end(v) not in checked_vertexes:
                 orient_edge_direction(e, v)
                 vertexes_to_check_edge_orientation += e.other_end(v)
 
