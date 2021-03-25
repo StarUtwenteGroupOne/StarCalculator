@@ -149,7 +149,7 @@ def create_event_tree(size=3):
 
 def create_fault_tree_trainingset(test_fault_tree):
     print("createTrainingSetFaultTree")
-    return TrainingSet([1])
+    return TrainingSet([[False,False,False],[False,True,False],[True,False,False],[True,True,True]],{"a":1,"b":2,"c":3})
 
 
 def create_event_tree_trainingset(test_event_tree):
