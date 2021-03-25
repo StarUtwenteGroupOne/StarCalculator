@@ -212,7 +212,7 @@ class Graph(object):
         self._directed = directed
         self._next_label_value = 0
 
-        for i in range(n):
+        for _ in range(n):
             self.add_vertex(Vertex(self))
 
     def __repr__(self):
