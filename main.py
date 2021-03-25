@@ -146,8 +146,6 @@ def create_event_tree(size=3):
 
 def create_fault_tree_trainingset(test_fault_tree):
     print("createTrainingSetFaultTree")
-
-
     return TrainingSet([1])
 
 
@@ -267,10 +265,10 @@ def create_quantitative_fault_tree(directed_fault_tree, training_set_fault_tree)
             total = vertices_set.shape[0] + (2 ** (vertices_set.shape[1] - 1)) * alpha
 
             for p in vertices_set:
-                if helping_dict[p] is None:
-                    helping_dict[p] = 1
+                if helping_dict[p.tobytes()] is None:
+                    helping_dict[p.tobytes()] = 1
                 else:
-                    helping_dict[p] = helping_dict[p] + 1
+                    helping_dict[p.tobytes()] = helping_dict[p.tobytes()] + 1
 
             for k in helping_dict.keys():
                 cpt_i[k] = (helping_dict[k] + alpha) / total
@@ -289,6 +287,7 @@ def print_quantitative_bowtie(quantitative_bowtie):
 if __name__ == '__main__':
     et = create_event_tree(20)
     ft = create_fault_tree(20)
-    (_, _) = create_quantitative_event_tree(directed_event_tree=G, training_set_event_tree=tr)
+    print(tr.observations)
+    (_, _) = create_quantitative_fault_tree(directed_event_tree=G, training_set_event_tree=tr)
 
     create_quantitative_bowtie_from_trees(et, ft)
