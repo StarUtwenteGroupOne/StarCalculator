@@ -5,6 +5,7 @@
 
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
+import csv
 import math
 import random
 
@@ -52,13 +53,64 @@ def create_test_bowtie(size=6):
     print("createTestBowtie")
 
     # The size needs to be one larger because we will merge the top events later.
-    size += 1
+    # size += 1
+    #
+    # fault_tree = create_fault_tree(ceil(size / 2))
+    # event_tree = create_event_tree(size - ceil(size / 2))
+    #
+    # return create_quantitative_bowtie_from_trees(fault_tree, event_tree)
+    ft = Graph(directed=True)
+    ft_event_names = ["DTA", "GO", "TE", "EF", "CTP", "TVF", "HGL", "SI", "PS"]
+    for label in ft_event_names:
+        ft += Vertex(graph=ft, label=label)
 
-    fault_tree = create_fault_tree(ceil(size / 2))
-    event_tree = create_event_tree(size - ceil(size / 2))
+    ft_trainingset = None
 
-    return create_quantitative_bowtie_from_trees(fault_tree, event_tree)
+    with open('trainingset/faulttree.csv', 'r') as f:
+        csv_file = csv.reader(f)
+        ft_trainingset = TrainingSet(training_set={
+        'event_names': ft_event_names,
+        'observations': [[e == "T" for e in line] for line in csv_file]
+        })
 
+    # print(ft_trainingset.observations)
+
+
+
+    et = Graph(directed=True)
+    et_event_names = ["TE", "LD", "DE", "TODP", "DT", "TDP", "PPS", "TOE", "PF", "THE"]
+    for label in et_event_names:
+        et += Vertex(graph=et, label=label)
+
+    et_trainingset = None
+
+    with open('trainingset/eventtree.csv', 'r') as f:
+        csv_file = csv.reader(f)
+
+        et_trainingset = TrainingSet(training_set={
+        'event_names': et_event_names,
+        'observations': [[e == "T" for e in line] for line in csv_file]
+        })
+
+    # print(ft_trainingset.observations)
+
+    et_from_ts = create_undirected_tree(et_trainingset)
+    ft_from_ts = create_undirected_tree(ft_trainingset)
+
+    print_quantitative_bowtie(et_from_ts, 'et_from_ts.dot')
+    print_quantitative_bowtie(ft_from_ts, 'ft_from_ts.dot')
+
+
+    dir_et_from_ts = create_directed_event_tree(et_from_ts, get_top_event(et_from_ts))
+    dir_ft_from_ts = create_directed_fault_tree(ft_from_ts, get_top_event(ft_from_ts))
+
+    print_quantitative_bowtie(dir_ft_from_ts, 'dir_ft_from_ts.dot')
+    print_quantitative_bowtie(dir_et_from_ts, 'dir_et_from_ts.dot')
+
+
+
+
+    return
 
 def create_quantitative_bowtie_from_trees(event_tree, fault_tree):
     # And now we need to union the graph
@@ -70,7 +122,7 @@ def create_quantitative_bowtie_from_trees(event_tree, fault_tree):
     for v in bowtie._v:
         v._graph = bowtie
 
-    print([v.label for v in bowtie.vertices])
+    # print([v.label for v in bowtie.vertices])
 
     top_events = []
     # Find the two top events:
@@ -156,9 +208,15 @@ def create_event_tree_trainingset(test_event_tree):
     return TrainingSet([1])
 
 
-def get_top_event(test_bowtie):
+def get_top_event(test_bowtie: Graph):
     print("getTopEvent")
-    return 1
+    top_events = []
+    for vtx in test_bowtie.vertices:
+        if vtx.label[:len(TOP_EVENT_LABEL)] == TOP_EVENT_LABEL:
+            top_events.append(vtx)
+    if len(top_events) != 1:
+        raise AttributeError(f"Graph has no '{TOP_EVENT_LABEL}' node")
+    return top_events[0]
 
 
 def get_learning_parameters():
@@ -177,9 +235,9 @@ def create_undirected_tree(training_set):
     graph = Graph(False)
     available_events = [True] * events_size
     available_events[0] = False
-    vertices: VertexList = [Vertex(graph)] + [None for _ in range(events_size - 1)]
+    vertices: VertexList = [Vertex(graph, label=training_set.event_names[0])] + [None for _ in range(events_size - 1)]
     graph.add_vertex(vertices[0])
-    for _ in range(1, events_size):
+    for event_names_index in range(1, events_size):
         highest_i = -1
         highest_j = -1
         for i in range(0, events_size):
@@ -190,7 +248,7 @@ def create_undirected_tree(training_set):
                     highest_i = i
                     highest_j = j
         available_events[highest_j] = False
-        vertices[highest_j] = Vertex(graph)
+        vertices[highest_j] = Vertex(graph, training_set.event_names[event_names_index])
         edge = Edge(vertices[highest_i], vertices[highest_j])
         graph.add_vertex(vertices[highest_j])
         graph.add_edge(edge)
@@ -206,7 +264,10 @@ def compute_mutual_information(training_set, event1, event2):
             probability_event1_and_event2 = training_set.compute_combined_probability(event1, event1_state, event2,
                                                                                       event2_state)
             probability = probability_event1_and_event2 / (probability_event1 * probability_event2)
-            weight += probability_event1_and_event2 * math.log(probability, 10)
+            if any([ i == 0 for i in [probability_event1_and_event2, probability_event1, probability_event2]]):
+                weight += 0
+            else:
+                weight += probability_event1_and_event2 * math.log(probability, 10)
     return weight
 
 
@@ -217,11 +278,10 @@ def create_directed_event_tree(undirected_event_tree: Graph, top_event: Vertex):
 
     :return: A directed Event Tree of a bow tie.
     """
-    result = undirected_event_tree
+    result = undirected_event_tree.deepcopy()
 
     # Keep track of vertexes which have been checked
-    vertexes_to_check_edge_orientation = list()
-    vertexes_to_check_edge_orientation += top_event
+    vertexes_to_check_edge_orientation = [top_event]
     checked_vertexes = list()
 
     # While there are still vertexes to check
@@ -234,11 +294,12 @@ def create_directed_event_tree(undirected_event_tree: Graph, top_event: Vertex):
         for e in v.incidence:
             if e.other_end(v) not in checked_vertexes:
                 orient_edge_direction(e, v)
-                vertexes_to_check_edge_orientation += e.other_end(v)
+                vertexes_to_check_edge_orientation.append(e.other_end(v))
 
         # v has been checked
-        vertexes_to_check_edge_orientation.remove(v)
-        checked_vertexes += v
+        # vertexes_to_check_edge_orientation.remove(v)
+        # It's already gone, you popped it!!
+        checked_vertexes.append(v)
 
     # The graph is now directed
     result._directed = True
@@ -255,7 +316,7 @@ def create_directed_fault_tree(undirected_fault_tree: Graph, top_event: Vertex):
     :param top_event: The TE of the fault tree
     :return: A directed Fault Tree of a bow tie.
     """
-    result = undirected_fault_tree
+    result = undirected_fault_tree.deepcopy()
 
     orient_top_event_for_fault_tree(top_event)
 
@@ -441,11 +502,11 @@ def print_quantitative_bowtie(quantitative_bowtie, filename):
             for k in v.probability.keys():
                 print(type(k))
                 if isinstance(k, Vertex):
-                    v.new_label += f" {k.label} -> {v.probability[k]}"
+                    v.new_label += f"\n {k.label} -> {v.probability[k]}"
                 elif isinstance(k, str):
                     v.new_label += f"\n {k} -> {v.probability[k]}"
                 else:
-                    v.new_label += f" {k} -> {v.probability[k]}"
+                    v.new_label += f"\n {k} -> {v.probability[k]}"
         for v in graph.vertices:
             v.label = v.new_label
 
@@ -468,8 +529,10 @@ if __name__ == '__main__':
 
     tr.event_names = [v.label for v in ft.vertices]
 
-    print(tr.event_names)
+    # print(tr.event_names)
 
     (_, _) = create_quantitative_fault_tree(ft, tr)
 
     create_quantitative_bowtie_from_trees(et, ft)
+
+    create_test_bowtie()

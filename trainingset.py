@@ -14,7 +14,7 @@ class TrainingSet:
         if training_set:
             assert 'event_names' in training_set
             assert 'observations' in training_set
-            print(training_set['event_names'])
+            # print(training_set['event_names'])
             self.event_names = training_set['event_names']
             self.observations = training_set['observations']
 
@@ -33,15 +33,23 @@ class TrainingSet:
         else:
             return list(zip(*self.observations))[self.event_names.index(event_name)]
 
+    def compute_single_probability(self, event_index, event_state):
+        observations = 0
+        correspondingObservations = 0
+        for observation in self.observations:
+            observations += 1
+            if observation[event_index] == event_state:
+                correspondingObservations += 1
+        return correspondingObservations / observations
 
-    def compute_single_probability(self, event, event_state):
-        print("compute_single_probability")
-        return 1
-
-
-    def compute_combined_probability(self, event1, event1_state, event2, event2_state):
-        print("compute_combined_probability")
-        return 1
+    def compute_combined_probability(self, event1_index, event1_state, event2_index, event2_state):
+        observations = 0
+        correspondingObservations = 0
+        for observation in self.observations:
+            observations += 1
+            if observation[event1_index] == event1_state and observation[event2_index] == event2_state:
+                correspondingObservations += 1
+        return correspondingObservations / observations
 
     def get_events_size(self):
         return len(self.event_names)
