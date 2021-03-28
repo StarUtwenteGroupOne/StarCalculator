@@ -6,6 +6,8 @@
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 import math
+import random
+
 import numpy as np
 
 import graph_io
@@ -116,8 +118,7 @@ def create_fault_tree(size=3) -> Graph:
             for last_level_vertex in last_level_vertices:
                 graph.add_edge(
                     Edge(tail=last_level_vertex,
-                         head=this_level_vertices[random.randint(0, len(this_level_vertices) - 1)],
-                         weight=random.random()))
+                         head=this_level_vertices[random.randint(0, len(this_level_vertices) - 1)]))
 
         last_level_vertices = this_level_vertices
 
