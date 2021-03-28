@@ -361,12 +361,9 @@ def create_quantitative_event_tree(directed_event_tree, training_set_event_tree)
     G = directed_event_tree
     tr = training_set_event_tree
     for v in G.vertices:
-        vertex = v
         probability_of_happening_i = {}
         list1 = tr.get_observations_by_event_name(v.label)
         for e in v.incidence:
-        # for e in G.edges:
-        #     if e.tail == vertex:
             list2 = tr.get_observations_by_event_name(e.head.label)
             number_instances_i_j = 0
             number_instances_vertex = 0
@@ -375,10 +372,11 @@ def create_quantitative_event_tree(directed_event_tree, training_set_event_tree)
                     number_instances_i_j += 1
                 if list1[i]:
                     number_instances_vertex += 1
-            if number_instances_vertex != 0:
-                probability_of_happening_i[e.head] = number_instances_i_j / number_instances_vertex
-            e._weight = number_instances_i_j / number_instances_vertex
-        v.probability = probability_of_happening_i
+            if e.head.label != v.label:
+                if number_instances_vertex != 0:
+                    probability_of_happening_i[e.head] = number_instances_i_j / number_instances_vertex
+                e._weight = number_instances_i_j / number_instances_vertex
+        v.probability.update(probability_of_happening_i)
         probability_of_happening.append(probability_of_happening_i)
     print("createQuantitativeEventTree")
 
@@ -405,7 +403,7 @@ def create_quantitative_fault_tree(directed_fault_tree, training_set_fault_tree)
             total = vertices_set.shape[0] + (2 ** (vertices_set.shape[1] - 1)) * alpha
 
             for p in vertices_set:
-                p_as_np = np.array(p)
+                p_as_np = np.array(p[1:])
                 if not (str(p_as_np) in helping_dict.keys()):
                     helping_dict[str(p_as_np)] = 1
                 else:
@@ -413,9 +411,20 @@ def create_quantitative_fault_tree(directed_fault_tree, training_set_fault_tree)
 
             for k in helping_dict.keys():
                 cpt_i[k] = (helping_dict[k] + alpha) / total
-            v.probability = cpt_i
+            v.probability.update(cpt_i)
 
             cpt.append(cpt_i)
+        else:
+            vertices_set = np.array(vertices_set).transpose()
+            size = len(vertices_set)
+            for obs in vertices_set:
+                if str(obs) in v.probability:
+                    v.probability[str(obs)] += 1
+                else:
+                    v.probability[str(obs)] = 1
+            # obs is either 0 or 1, so add alpha and divide by number of observations
+            for k in v.probability.keys():
+                v.probability[k] = (v.probability[k] + alpha) / (size + 2 * alpha)
     print("createQuantitativeFaultTree")
 
     print_quantitative_bowtie(G, './create_quantitative_fault_tree.dot')
