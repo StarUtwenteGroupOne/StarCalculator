@@ -1,3 +1,5 @@
+from random import random, randint
+
 from graph import *
 from trainingset import *
 
@@ -44,5 +46,10 @@ G.add_edge(e9)
 G.add_edge(e10)
 print(G.vertices)
 print(G.edges)
-tr = TrainingSet(training_set=["v1"])
-
+tr = TrainingSet(training_set={
+    'event_names': [v.label for v in G.vertices],
+    'observations': [
+        [randint(0, 1) for _ in G.vertices]
+        for _ in range(20)
+    ]
+})

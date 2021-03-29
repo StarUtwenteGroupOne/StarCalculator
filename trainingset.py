@@ -1,26 +1,37 @@
-class TrainingSet:
-    # The distinct events that are available in this class
-    event_names = {}
+from random import randint
 
-    # The observations. A 2d table, where the lists inside are ordered by the event_names.
+
+class TrainingSet:
+
+    # The distinct events that are available in this class
+    event_names = [1, 2]
+
+    # The observations. A 2d table, where the lists inside are ordered by the
+    # event_names above.
     observations = []
 
-    def __init__(self, observations=None, event_names=None):
-        if observations:
-            self.observations = observations
+    def __init__(self, training_set=None, event_tree=None, fault_tree=None):
+        if training_set:
+            assert 'event_names' in training_set
+            assert 'observations' in training_set
+            # print(training_set['event_names'])
+            self.event_names = training_set['event_names']
+            self.observations = training_set['observations']
+
+            observations = training_set
+        elif event_tree:
+            pass
+        elif event_tree:
+            pass
         else:
-            raise AttributeError("Fill in the arguments")
-        if event_names:
-            self.event_names = event_names
-        else:
-            raise AttributeError("Fill in the arguments")
+            raise AttributeError("Fill in at least one of the arguments")
 
     def get_observations_by_event_name(self, event_name):
-        i = self.event_names[event_name]
-        if not i:
+        if event_name not in self.event_names:
+            print(event_name)
             raise AttributeError("Event not in training set!")
         else:
-            return list(zip(*self.observations))[i]
+            return list(zip(*self.observations))[self.event_names.index(event_name)]
 
     def compute_single_probability(self, event_index, event_state):
         observations = 0
@@ -42,3 +53,13 @@ class TrainingSet:
 
     def get_events_size(self):
         return len(self.event_names)
+
+
+def create_bogus_trainingset(et_or_ft):
+    return TrainingSet(training_set={
+        'event_names': [v.label for v in et_or_ft.vertices],
+        'observations': [
+            [randint(0, 1) for _ in et_or_ft.vertices]
+            for _ in range(20)
+        ]
+    })
