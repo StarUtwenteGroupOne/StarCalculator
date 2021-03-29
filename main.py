@@ -12,9 +12,6 @@ import random
 import numpy as np
 
 import graph_io
-from trainingset import *
-from math import ceil
-
 from graph import Graph, Vertex, Edge
 from trainingset import TrainingSet
 
@@ -116,8 +113,6 @@ def create_test_bowtie(size=6):
 
     # print(ft_trainingset.observations)
 
-
-
     et = Graph(directed=True)
     et_event_names = ["TE", "LD", "DE", "TODP", "DT", "TDP", "PPS", "TOE", "PF", "THE"]
     for label in et_event_names:
@@ -141,15 +136,11 @@ def create_test_bowtie(size=6):
     write_graph_to_dotfile(et_from_ts, 'et_from_ts.dot')
     write_graph_to_dotfile(ft_from_ts, 'ft_from_ts.dot')
 
-
-    dir_et_from_ts = create_directed_event_tree(et_from_ts, get_top_event(et_from_ts))
-    dir_ft_from_ts = create_directed_fault_tree(ft_from_ts, get_top_event(ft_from_ts))
+    dir_et_from_ts = create_directed_event_tree(et_from_ts)
+    dir_ft_from_ts = create_directed_fault_tree(ft_from_ts)
 
     write_graph_to_dotfile(dir_ft_from_ts, 'dir_ft_from_ts.dot')
     write_graph_to_dotfile(dir_et_from_ts, 'dir_et_from_ts.dot')
-
-
-
 
 
 def create_quantitative_bowtie_from_trees(event_tree, fault_tree):
@@ -190,7 +181,6 @@ def create_fault_tree(size=3) -> Graph:
         level_sizes.append(min(orig_size, next_level_size))
         orig_size -= next_level_size
         next_level_size += 1
-
 
     level_sizes.reverse()
 
@@ -240,7 +230,8 @@ def create_event_tree(size=3):
 
 def create_fault_tree_trainingset(test_fault_tree):
     print("createTrainingSetFaultTree")
-    return TrainingSet([[False,False,False],[False,True,False],[True,False,False],[True,True,True]],{"a":1,"b":2,"c":3})
+    return TrainingSet([[False, False, False], [False, True, False], [True, False, False], [True, True, True]],
+                       {"a": 1, "b": 2, "c": 3})
 
 
 def create_event_tree_trainingset(test_event_tree):
@@ -304,7 +295,7 @@ def compute_mutual_information(training_set, event1, event2):
             probability_event1_and_event2 = training_set.compute_combined_probability(event1, event1_state, event2,
                                                                                       event2_state)
             probability = probability_event1_and_event2 / (probability_event1 * probability_event2)
-            if any([ i == 0 for i in [probability_event1_and_event2, probability_event1, probability_event2]]):
+            if any([i == 0 for i in [probability_event1_and_event2, probability_event1, probability_event2]]):
                 weight += 0
             else:
                 weight += probability_event1_and_event2 * math.log(probability, 10)
@@ -355,7 +346,6 @@ def create_directed_fault_tree(undirected_fault_tree: Graph):
     Doesn't use a deepcopy yet, which may give some problems
 
     :param undirected_fault_tree: The fault tree to orient
-    :param top_event: The TE of the fault tree
     :return: A directed Fault Tree of a bow tie.
     """
     result = undirected_fault_tree.deepcopy()
@@ -382,7 +372,7 @@ def is_leaf(vertex: Vertex):
 def orient_top_event_for_fault_tree(parent: Vertex):
     """
     Orients the edges of the TE of the fault tree towards the TE (which is the parent, in this case).
-    After that, it checks whether the children of the TE are leafs.
+    After that, it checks whether the children of the TE are leaves.
     If it is not a leaf, the algorithm will loop over the edges of the articulation point.
 
     :param parent: Top Event / parent event of the articulation node
@@ -555,12 +545,6 @@ def write_graph_to_dotfile(quantitative_bowtie, filename):
             v.label = v.new_label
 
         graph_io.write_dot(graph, f, True)
-
-
-
-
-
-
 
 
 if __name__ == '__main__':
