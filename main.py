@@ -23,6 +23,7 @@ VertexList = [Vertex]
 
 TOP_EVENT_LABEL = "TE"
 
+
 def start():
     # test_bowtie = create_test_bowtie()
 
@@ -44,8 +45,8 @@ def start():
 def create_quantitative_bowtie(training_set_event_tree, training_set_fault_tree, top_event, learning_parameters):
     undirected_fault_tree = create_undirected_tree(training_set_fault_tree)
     undirected_event_tree = create_undirected_tree(training_set_event_tree)
-    directed_fault_tree = create_directed_fault_tree(undirected_fault_tree, top_event)
-    directed_event_tree = create_directed_event_tree(undirected_event_tree, top_event)
+    directed_fault_tree = create_directed_fault_tree(undirected_fault_tree)
+    directed_event_tree = create_directed_event_tree(undirected_event_tree)
     quantitative_event_tree, probability_of_event_tree = create_quantitative_event_tree(directed_event_tree,
                                                                                         training_set_event_tree)
     quantitative_fault_tree, probability_of_fault_tree = create_quantitative_fault_tree(directed_fault_tree,
@@ -310,7 +311,7 @@ def compute_mutual_information(training_set, event1, event2):
     return weight
 
 
-def create_directed_event_tree(undirected_event_tree: Graph, top_event: Vertex):
+def create_directed_event_tree(undirected_event_tree: Graph):
     """
     Creates a directed event tree out of an undirected event tree.
     Doesn't use a deepcopy yet, which may give some problems
@@ -318,6 +319,8 @@ def create_directed_event_tree(undirected_event_tree: Graph, top_event: Vertex):
     :return: A directed Event Tree of a bow tie.
     """
     result = undirected_event_tree.deepcopy()
+
+    top_event = get_top_event(result)
 
     # Keep track of vertexes which have been checked
     vertexes_to_check_edge_orientation = [top_event]
@@ -346,7 +349,7 @@ def create_directed_event_tree(undirected_event_tree: Graph, top_event: Vertex):
     return result
 
 
-def create_directed_fault_tree(undirected_fault_tree: Graph, top_event: Vertex):
+def create_directed_fault_tree(undirected_fault_tree: Graph):
     """
     Creates a directed fault tree out of an undirected fault tree.
     Doesn't use a deepcopy yet, which may give some problems
@@ -356,6 +359,8 @@ def create_directed_fault_tree(undirected_fault_tree: Graph, top_event: Vertex):
     :return: A directed Fault Tree of a bow tie.
     """
     result = undirected_fault_tree.deepcopy()
+
+    top_event = get_top_event(result)
 
     orient_top_event_for_fault_tree(top_event)
 
@@ -371,7 +376,7 @@ def is_leaf(vertex: Vertex):
     :param vertex: Vertex to check edges
     :return: True if vertex has more than one edge
     """
-    return len(vertex.incidence) > 1
+    return len(vertex.incidence) == 1
 
 
 def orient_top_event_for_fault_tree(parent: Vertex):
@@ -416,9 +421,9 @@ def determine_independence_of_parent_and_child(parent: Vertex, articulation_poin
     the parent parameter.
     :param edge: The edge which will be oriented (between the articulation point and the child.
     """
-    yes_or_no = input("Are " + parent.label + " and " + child.label + "independent? (y/n)")
+    yes_or_no = input("Are " + parent.label + " and " + child.label + " independent? (y/n)")
     while not (yes_or_no == "y" or yes_or_no == "n"):
-        yes_or_no = input("Wrong input! Are " + parent.label + " and " + child.label + "independent? (y/n)")
+        yes_or_no = input("Wrong input! Are " + parent.label + " and " + child.label + " independent? (y/n)")
     if yes_or_no == "y":
         orient_edge_direction(edge, articulation_point)
         if not is_leaf(child):
