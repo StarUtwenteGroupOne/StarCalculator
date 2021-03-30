@@ -1,5 +1,8 @@
+import csv
 from decimal import Decimal
 from random import randint
+
+from main import TRAININGSET_DIR
 
 
 class TrainingSet:
@@ -59,3 +62,34 @@ def create_bogus_trainingset(et_or_ft):
             for _ in range(20)
         ]
     })
+
+
+def read_trainingset(filename):
+    ft_trainingset = None
+    with open(TRAININGSET_DIR + filename, 'r') as f:
+        csv_file = csv.reader(f)
+        ft_trainingset = TrainingSet()
+
+        had_first_line = False
+        for line in csv_file:
+            # The first line are the column names
+            if not had_first_line:
+                ft_trainingset.event_names = [e for e in line]
+                had_first_line = True
+            else:
+                ft_trainingset.observations.append([e == "T" for e in line])
+    return ft_trainingset
+
+
+def get_paper_fault_tree():
+
+    filenames = ['faulttree.csv', 'FT_other_order.csv', 'FT_and_or.csv']
+
+    return read_trainingset(filenames[2])
+
+
+def get_paper_event_tree():
+
+    filenames = ['eventtree.csv', 'ET_other_order.csv']
+
+    return read_trainingset(filenames[1])

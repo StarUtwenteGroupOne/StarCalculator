@@ -6,15 +6,14 @@
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 import csv
-import math
 import random
 from decimal import Decimal
 
 import numpy as np
 
-import graph_io
-from graph import Graph, Vertex, Edge
-from trainingset import TrainingSet
+from lib import graph_io
+from lib.graph import Graph, Vertex, Edge
+from trainingset import TrainingSet, get_paper_fault_tree, get_paper_event_tree
 
 # noinspection PyTypeChecker
 VertexList = [Vertex]
@@ -33,11 +32,8 @@ def start():
     training_set_fault_tree = get_paper_fault_tree()
     training_set_event_tree = get_paper_event_tree()
 
-    learning_parameters = get_learning_parameters()
     bowtie = create_quantitative_bowtie(training_set_event_tree,
-                                        training_set_fault_tree,
-                                        Vertex(graph=Graph(directed=False), label=TOP_EVENT_LABEL),
-                                        learning_parameters)
+                                        training_set_fault_tree)
     write_graph_to_dotfile(bowtie, filename="final_bowtie.dot")
 
 
@@ -52,37 +48,6 @@ def create_quantitative_bowtie(training_set_event_tree, training_set_fault_tree,
                                                                                         training_set_fault_tree)
     quantitative_bowtie = create_quantitative_bowtie_from_trees(quantitative_event_tree, quantitative_fault_tree)
     return quantitative_bowtie
-
-
-def read_trainingset(filename):
-    ft_trainingset = None
-    with open(TRAININGSET_DIR + filename, 'r') as f:
-        csv_file = csv.reader(f)
-        ft_trainingset = TrainingSet()
-
-        had_first_line = False
-        for line in csv_file:
-            # The first line are the column names
-            if not had_first_line:
-                ft_trainingset.event_names = [e for e in line]
-                had_first_line = True
-            else:
-                ft_trainingset.observations.append([e == "T" for e in line])
-    return ft_trainingset
-
-
-def get_paper_fault_tree():
-
-    filenames = ['faulttree.csv', 'FT_other_order.csv', 'FT_and_or.csv']
-
-    return read_trainingset(filenames[2])
-
-
-def get_paper_event_tree():
-
-    filenames = ['eventtree.csv', 'ET_other_order.csv']
-
-    return read_trainingset(filenames[1])
 
 
 def create_test_bowtie(size=6):
