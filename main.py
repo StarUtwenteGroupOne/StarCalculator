@@ -296,8 +296,8 @@ def create_undirected_tree(training_set):
 
 def compute_mutual_information(training_set, event1, event2):
     weight = 0
-    for event1_state in [True]:
-        for event2_state in [True]:
+    for event1_state in [True, False]:
+        for event2_state in [True, False]:
             probability_event1 = training_set.compute_single_probability(event1, event1_state)
             probability_event2 = training_set.compute_single_probability(event2, event2_state)
             probability_event1_and_event2 = training_set.compute_combined_probability(event1, event1_state, event2,
