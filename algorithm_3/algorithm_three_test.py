@@ -1,6 +1,4 @@
-from random import random, randint
-
-from graph import *
+from lib.graph import *
 from trainingset import *
 
 G = Graph(directed=True)

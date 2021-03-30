@@ -11,21 +11,16 @@ class TrainingSet:
     # event_names above.
     observations = []
 
-    def __init__(self, training_set=None, event_tree=None, fault_tree=None):
+    def __init__(self, training_set=None):
         if training_set:
             assert 'event_names' in training_set
             assert 'observations' in training_set
             # print(training_set['event_names'])
             self.event_names = training_set['event_names']
             self.observations = training_set['observations']
-
-            observations = training_set
-        elif event_tree:
-            pass
-        elif event_tree:
-            pass
         else:
-            raise AttributeError("Fill in at least one of the arguments")
+            self.event_names = []
+            self.observations = []
 
     def get_observations_by_event_name(self, event_name):
         if event_name not in self.event_names:
