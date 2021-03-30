@@ -54,16 +54,17 @@ def create_quantitative_bowtie(training_set_event_tree, training_set_fault_tree,
 
 def get_paper_fault_tree():
     ft = Graph(directed=True)
-    ft_event_names = ["TE", "SI", "HGL", "PS", "TVF", "CTP", "EF", "DTA", "GO"]
+    ft_event_names = ["TE", "AND1", "AND2", "B1", "B2", "B3", "B4"]
+    #ft_event_names = ["TE", "SI", "HGL", "PS", "TVF", "CTP", "EF", "DTA", "GO"]
     # ft_event_names = ["DTA", "GO", "TE", "EF", "CTP", "TVF", "HGL", "SI", "PS"]
     for label in ft_event_names:
         ft += Vertex(graph=ft, label=label)
 
     ft_trainingset = None
 
-    filename = ['trainingset/faulttree.csv', 'trainingset/FT_other_order.csv']
+    filename = ['trainingset/faulttree.csv', 'trainingset/FT_other_order.csv','trainingset/FT_and_or.csv']
 
-    with open(filename[1], 'r') as f:
+    with open(filename[2], 'r') as f:
         csv_file = csv.reader(f)
         ft_trainingset = TrainingSet(training_set={
             'event_names': ft_event_names,
@@ -103,16 +104,17 @@ def create_test_bowtie(size=6):
     #
     # return create_quantitative_bowtie_from_trees(fault_tree, event_tree)
     ft = Graph(directed=True)
-    ft_event_names = ["TE", "SI", "HGL", "PS", "TVF", "CTP", "EF", "DTA", "GO"]
+    ft_event_names = ["TE", "AND1", "AND2", "B1", "B2", "B3", "B4"]
+    #ft_event_names = ["TE", "SI", "HGL", "PS", "TVF", "CTP", "EF", "DTA", "GO"]
     #ft_event_names = ["DTA", "GO", "TE", "EF", "CTP", "TVF", "HGL", "SI", "PS"]
     for label in ft_event_names:
         ft += Vertex(graph=ft, label=label)
 
     ft_trainingset = None
 
-    filename = ['trainingset/faulttree.csv', 'trainingset/FT_other_order.csv']
+    filename = ['trainingset/faulttree.csv', 'trainingset/FT_other_order.csv','trainingset/FT_and_or.csv']
 
-    with open(filename[1], 'r') as f:
+    with open(filename[2], 'r') as f:
         csv_file = csv.reader(f)
         ft_trainingset = TrainingSet(training_set={
         'event_names': ft_event_names,
