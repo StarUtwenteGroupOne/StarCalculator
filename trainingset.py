@@ -1,3 +1,4 @@
+from decimal import Decimal
 from random import randint
 
 
@@ -34,8 +35,8 @@ class TrainingSet:
             return list(zip(*self.observations))[self.event_names.index(event_name)]
 
     def compute_single_probability(self, event_index, event_state):
-        observations = 0
-        correspondingObservations = 0
+        observations = Decimal(0)
+        correspondingObservations = Decimal(0)
         for observation in self.observations:
             observations += 1
             if observation[event_index] == event_state:
@@ -43,8 +44,8 @@ class TrainingSet:
         return correspondingObservations / observations
 
     def compute_combined_probability(self, event1_index, event1_state, event2_index, event2_state):
-        observations = 0
-        correspondingObservations = 0
+        observations = Decimal(0)
+        correspondingObservations = Decimal(0)
         for observation in self.observations:
             observations += 1
             if observation[event1_index] == event1_state and observation[event2_index] == event2_state:

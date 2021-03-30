@@ -8,6 +8,7 @@
 import csv
 import math
 import random
+from decimal import Decimal
 
 import numpy as np
 
@@ -308,7 +309,7 @@ def compute_mutual_information(training_set, event1, event2):
             if any([i == 0 for i in [probability_event1_and_event2, probability_event1, probability_event2]]):
                 weight += 0
             else:
-                probabilityLog = math.log(probability, 2)
+                probabilityLog = probability.log10() / Decimal(2).log10()
                 weight += probability_event1_and_event2 * probabilityLog
 
     return weight if event1 != event2 else None
