@@ -8,6 +8,7 @@
 import csv
 import math
 import random
+from decimal import Decimal
 
 import numpy as np
 
@@ -44,13 +45,17 @@ def create_quantitative_bowtie(training_set_event_tree, training_set_fault_tree)
 
 def get_paper_fault_tree():
     ft = Graph(directed=True)
-    ft_event_names = ["DTA", "GO", "TE", "EF", "CTP", "TVF", "HGL", "SI", "PS"]
+    ft_event_names = ["TE", "AND1", "AND2", "B1", "B2", "B3", "B4"]
+    #ft_event_names = ["TE", "SI", "HGL", "PS", "TVF", "CTP", "EF", "DTA", "GO"]
+    # ft_event_names = ["DTA", "GO", "TE", "EF", "CTP", "TVF", "HGL", "SI", "PS"]
     for label in ft_event_names:
         ft += Vertex(graph=ft, label=label)
 
     ft_trainingset = None
 
-    with open('trainingset/faulttree.csv', 'r') as f:
+    filename = ['trainingset/faulttree.csv', 'trainingset/FT_other_order.csv','trainingset/FT_and_or.csv']
+
+    with open(filename[2], 'r') as f:
         csv_file = csv.reader(f)
         ft_trainingset = TrainingSet(training_set={
             'event_names': ft_event_names,
@@ -61,13 +66,15 @@ def get_paper_fault_tree():
 
 def get_paper_event_tree():
     et = Graph(directed=True)
-    et_event_names = ["TE", "LD", "DE", "TODP", "DT", "TDP", "PPS", "TOE", "PF", "THE"]
+    et_event_names = ["TE", "PF", "THE", "PPS", "TOE", "TDP", "DT", "LD", "TODP", "DE"]
     for label in et_event_names:
         et += Vertex(graph=et, label=label)
 
     et_trainingset = None
 
-    with open('trainingset/eventtree.csv', 'r') as f:
+    filename = ['trainingset/eventtree.csv', 'trainingset/ET_other_order.csv']
+
+    with open(filename[1], 'r') as f:
         csv_file = csv.reader(f)
 
         et_trainingset = TrainingSet(training_set={
@@ -187,8 +194,8 @@ def create_undirected_tree(training_set):
 
 def compute_mutual_information(training_set, event1, event2):
     weight = 0
-    for event1_state in True, False:
-        for event2_state in True, False:
+    for event1_state in [True, False]:
+        for event2_state in [True, False]:
             probability_event1 = training_set.compute_single_probability(event1, event1_state)
             probability_event2 = training_set.compute_single_probability(event2, event2_state)
             probability_event1_and_event2 = training_set.compute_combined_probability(event1, event1_state, event2,
@@ -197,9 +204,10 @@ def compute_mutual_information(training_set, event1, event2):
             if any([i == 0 for i in [probability_event1_and_event2, probability_event1, probability_event2]]):
                 weight += 0
             else:
-                probabilityLog = math.log(probability, 10)
+                probabilityLog = probability.log10() / Decimal(2).log10()
                 weight += probability_event1_and_event2 * probabilityLog
-    return weight
+
+    return weight if event1 != event2 else None
 
 
 def create_directed_event_tree(undirected_event_tree: Graph):
@@ -440,6 +448,9 @@ def write_graph_to_dotfile(quantitative_bowtie, filename, with_probabilities=Tru
                         v.new_label += f"\n {k} -> {v.probability[k]}"
         for v in graph.vertices:
             v.label = v.new_label
+
+        for e in graph.edges:
+            e._weight = " "
 
         graph_io.write_dot(graph, f, True)
 
