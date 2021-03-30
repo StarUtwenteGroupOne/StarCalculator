@@ -23,24 +23,14 @@ TOP_EVENT_LABEL = "TE"
 
 
 def start():
-    # test_bowtie = create_test_bowtie()
-
-    # We will get this from file for now
-    # training_set_event_tree = create_event_tree_trainingset(test_bowtie)
-    # training_set_fault_tree = create_fault_tree_trainingset(test_bowtie)
-
     training_set_fault_tree = get_paper_fault_tree()
     training_set_event_tree = get_paper_event_tree()
 
-    learning_parameters = get_learning_parameters()
-    bowtie = create_quantitative_bowtie(training_set_event_tree,
-                                        training_set_fault_tree,
-                                        Vertex(graph=Graph(directed=False), label=TOP_EVENT_LABEL),
-                                        learning_parameters)
-    write_graph_to_dotfile(bowtie, filename="final_bowtie.dot")
+    bowtie = create_quantitative_bowtie(training_set_event_tree,training_set_fault_tree)
+    write_graph_to_dotfile(bowtie,"final_bowtie.dot", True)
 
 
-def create_quantitative_bowtie(training_set_event_tree, training_set_fault_tree, top_event, learning_parameters):
+def create_quantitative_bowtie(training_set_event_tree, training_set_fault_tree):
     undirected_fault_tree = create_undirected_tree(training_set_fault_tree)
     undirected_event_tree = create_undirected_tree(training_set_event_tree)
     directed_fault_tree = create_directed_fault_tree(undirected_fault_tree)
@@ -94,66 +84,6 @@ def get_paper_event_tree():
     return et_trainingset
 
 
-def create_test_bowtie(size=6):
-    print("createTestBowtie")
-
-    # The size needs to be one larger because we will merge the top events later.
-    # size += 1
-    #
-    # fault_tree = create_fault_tree(ceil(size / 2))
-    # event_tree = create_event_tree(size - ceil(size / 2))
-    #
-    # return create_quantitative_bowtie_from_trees(fault_tree, event_tree)
-    ft = Graph(directed=True)
-    ft_event_names = ["TE", "AND1", "AND2", "B1", "B2", "B3", "B4"]
-    #ft_event_names = ["TE", "SI", "HGL", "PS", "TVF", "CTP", "EF", "DTA", "GO"]
-    #ft_event_names = ["DTA", "GO", "TE", "EF", "CTP", "TVF", "HGL", "SI", "PS"]
-    for label in ft_event_names:
-        ft += Vertex(graph=ft, label=label)
-
-    ft_trainingset = None
-
-    filename = ['trainingset/faulttree.csv', 'trainingset/FT_other_order.csv','trainingset/FT_and_or.csv']
-
-    with open(filename[2], 'r') as f:
-        csv_file = csv.reader(f)
-        ft_trainingset = TrainingSet(training_set={
-        'event_names': ft_event_names,
-        'observations': [[e == "T" for e in line] for line in csv_file]
-        })
-
-    # print(ft_trainingset.observations)
-
-    et = Graph(directed=True)
-    et_event_names = ["TE", "PF", "THE", "PPS", "TOE", "TDP", "DT", "LD", "TODP", "DE"]
-    for label in et_event_names:
-        et += Vertex(graph=et, label=label)
-
-    et_trainingset = None
-
-    with open('trainingset/eventtree.csv', 'r') as f:
-        csv_file = csv.reader(f)
-
-        et_trainingset = TrainingSet(training_set={
-        'event_names': et_event_names,
-        'observations': [[e == "T" for e in line] for line in csv_file]
-        })
-
-    # print(ft_trainingset.observations)
-
-    et_from_ts = create_undirected_tree(et_trainingset)
-    ft_from_ts = create_undirected_tree(ft_trainingset)
-
-    write_graph_to_dotfile(et_from_ts, 'et_from_ts.dot')
-    write_graph_to_dotfile(ft_from_ts, 'ft_from_ts.dot')
-
-    dir_et_from_ts = create_directed_event_tree(et_from_ts)
-    dir_ft_from_ts = create_directed_fault_tree(ft_from_ts)
-
-    write_graph_to_dotfile(dir_ft_from_ts, 'dir_ft_from_ts.dot')
-    write_graph_to_dotfile(dir_et_from_ts, 'dir_et_from_ts.dot')
-
-
 def create_quantitative_bowtie_from_trees(event_tree, fault_tree):
     # And now we need to union the graph
     bowtie = Graph(directed=True)
@@ -163,8 +93,6 @@ def create_quantitative_bowtie_from_trees(event_tree, fault_tree):
 
     for v in bowtie._v:
         v._graph = bowtie
-
-    # print([v.label for v in bowtie.vertices])
 
     top_events = []
     # Find the two top events:
@@ -224,34 +152,7 @@ def create_fault_tree(size=3) -> Graph:
         graph_io.write_dot(graph, f, directed=True)
     return graph
 
-
-def create_event_tree(size=3):
-    event_tree_reversed = create_fault_tree(size)
-
-    # Reverse all edges in event_tree_reversed
-    for edge in event_tree_reversed.edges:
-        temp = edge.head
-        edge._head = edge.tail
-        edge._tail = temp
-
-    with open('./rand_event_tree.dot', 'w') as f:
-        graph_io.write_dot(event_tree_reversed, f, directed=True)
-    return event_tree_reversed
-
-
-def create_fault_tree_trainingset(test_fault_tree):
-    print("createTrainingSetFaultTree")
-    return TrainingSet([[False, False, False], [False, True, False], [True, False, False], [True, True, True]],
-                       {"a": 1, "b": 2, "c": 3})
-
-
-def create_event_tree_trainingset(test_event_tree):
-    print("createTrainingSetEventTree")
-    return TrainingSet([1])
-
-
 def get_top_event(test_bowtie: Graph):
-    print("getTopEvent")
     top_events = []
     for vtx in test_bowtie.vertices:
         if vtx.label[:len(TOP_EVENT_LABEL)] == TOP_EVENT_LABEL:
@@ -259,12 +160,6 @@ def get_top_event(test_bowtie: Graph):
     if len(top_events) != 1:
         raise AttributeError(f"Graph has no '{TOP_EVENT_LABEL}' node")
     return top_events[0]
-
-
-def get_learning_parameters():
-    print("getLearningParameters")
-    return 1
-
 
 # noinspection PyTypeChecker
 def create_undirected_tree(training_set):
@@ -486,7 +381,6 @@ def create_quantitative_event_tree(directed_event_tree, training_set_event_tree)
                 e._weight = number_instances_i_j / number_instances_vertex
         v.probability.update(probability_of_happening_i)
         probability_of_happening.append(probability_of_happening_i)
-    print("createQuantitativeEventTree")
 
     write_graph_to_dotfile(G, './create_quantitative_event_tree.dot')
     return G, probability_of_happening
@@ -533,27 +427,25 @@ def create_quantitative_fault_tree(directed_fault_tree, training_set_fault_tree)
             # obs is either 0 or 1, so add alpha and divide by number of observations
             for k in v.probability.keys():
                 v.probability[k] = (v.probability[k] + alpha) / (size + 2 * alpha)
-    print("createQuantitativeFaultTree")
 
     write_graph_to_dotfile(G, './create_quantitative_fault_tree.dot')
     return G, cpt
 
 
-def write_graph_to_dotfile(quantitative_bowtie, filename):
+def write_graph_to_dotfile(quantitative_bowtie, filename, with_probabilities=True):
     graph = quantitative_bowtie.deepcopy()
 
     with open(filename, 'w') as f:
         for v in graph.vertices:
             v.new_label = f"[{v.label}]"
-            # print(v.probability)
-            for k in v.probability.keys():
-                # print(type(k))
-                if isinstance(k, Vertex):
-                    v.new_label += f"\n {k.label} -> {v.probability[k]}"
-                elif isinstance(k, str):
-                    v.new_label += f"\n {k} -> {v.probability[k]}"
-                else:
-                    v.new_label += f"\n {k} -> {v.probability[k]}"
+            if with_probabilities:
+                for k in v.probability.keys():
+                    if isinstance(k, Vertex):
+                        v.new_label += f"\n {k.label} -> {v.probability[k]}"
+                    elif isinstance(k, str):
+                        v.new_label += f"\n {k} -> {v.probability[k]}"
+                    else:
+                        v.new_label += f"\n {k} -> {v.probability[k]}"
         for v in graph.vertices:
             v.label = v.new_label
 
