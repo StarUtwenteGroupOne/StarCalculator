@@ -21,6 +21,7 @@ VertexList = [Vertex]
 
 TOP_EVENT_LABEL = "TE"
 
+TRAININGSET_DIR = './trainingset/'
 
 def start():
     # test_bowtie = create_test_bowtie()
@@ -53,45 +54,35 @@ def create_quantitative_bowtie(training_set_event_tree, training_set_fault_tree,
     return quantitative_bowtie
 
 
-def get_paper_fault_tree():
-    ft = Graph(directed=True)
-    ft_event_names = ["TE", "AND1", "AND2", "B1", "B2", "B3", "B4"]
-    #ft_event_names = ["TE", "SI", "HGL", "PS", "TVF", "CTP", "EF", "DTA", "GO"]
-    # ft_event_names = ["DTA", "GO", "TE", "EF", "CTP", "TVF", "HGL", "SI", "PS"]
-    for label in ft_event_names:
-        ft += Vertex(graph=ft, label=label)
-
+def read_trainingset(filename):
     ft_trainingset = None
-
-    filename = ['trainingset/faulttree.csv', 'trainingset/FT_other_order.csv','trainingset/FT_and_or.csv']
-
-    with open(filename[2], 'r') as f:
+    with open(TRAININGSET_DIR + filename, 'r') as f:
         csv_file = csv.reader(f)
-        ft_trainingset = TrainingSet(training_set={
-            'event_names': ft_event_names,
-            'observations': [[e == "T" for e in line] for line in csv_file]
-        })
+        ft_trainingset = TrainingSet()
+
+        had_first_line = False
+        for line in csv_file:
+            # The first line are the column names
+            if not had_first_line:
+                ft_trainingset.event_names = [e for e in line]
+                had_first_line = True
+            else:
+                ft_trainingset.observations.append([e == "T" for e in line])
     return ft_trainingset
 
 
+def get_paper_fault_tree():
+
+    filenames = ['faulttree.csv', 'FT_other_order.csv', 'FT_and_or.csv']
+
+    return read_trainingset(filenames[2])
+
+
 def get_paper_event_tree():
-    et = Graph(directed=True)
-    et_event_names = ["TE", "PF", "THE", "PPS", "TOE", "TDP", "DT", "LD", "TODP", "DE"]
-    for label in et_event_names:
-        et += Vertex(graph=et, label=label)
 
-    et_trainingset = None
+    filenames = ['eventtree.csv', 'ET_other_order.csv']
 
-    filename = ['trainingset/eventtree.csv', 'trainingset/ET_other_order.csv']
-
-    with open(filename[1], 'r') as f:
-        csv_file = csv.reader(f)
-
-        et_trainingset = TrainingSet(training_set={
-            'event_names': et_event_names,
-            'observations': [[e == "T" for e in line] for line in csv_file]
-        })
-    return et_trainingset
+    return read_trainingset(filenames[1])
 
 
 def create_test_bowtie(size=6):
