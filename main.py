@@ -5,13 +5,12 @@
 
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
-import os
 
-from config import OUTPUT_DIR
-from learn_bowtie import create_bowtie, create_quantitative_event_tree, \
-    create_quantitative_fault_tree, orient_polytree, orient_tree
-from lib.graph import Vertex
-from maximal_weight_spanning_tree import maximal_weight_spanning_tree
+from algorithm_3.learn_bowtie import create_bowtie, create_quantitative_event_tree, \
+    create_quantitative_fault_tree
+from algorithm_2.orient_polytree import orient_polytree
+from algorithm_2.orient_tree import orient_tree
+from algorithm_1.create_undirected_tree import create_undirected_tree
 
 from read_trainingset import read_trainingset
 # noinspection PyTypeChecker
@@ -28,8 +27,8 @@ def start():
 
 
 def create_quantitative_bowtie(training_set_event_tree, training_set_fault_tree):
-    undirected_fault_tree = maximal_weight_spanning_tree(training_set_fault_tree)
-    undirected_event_tree = maximal_weight_spanning_tree(training_set_event_tree)
+    undirected_fault_tree = create_undirected_tree(training_set_fault_tree)
+    undirected_event_tree = create_undirected_tree(training_set_event_tree)
     directed_fault_tree = orient_polytree(undirected_fault_tree)
     directed_event_tree = orient_tree(undirected_event_tree)
     quantitative_event_tree, probability_of_event_tree = create_quantitative_event_tree(directed_event_tree,

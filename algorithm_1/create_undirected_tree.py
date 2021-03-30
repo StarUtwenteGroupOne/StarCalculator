@@ -4,14 +4,18 @@ from lib.graph import Graph, Vertex, Edge
 
 VertexList = [Vertex]
 
+
 # noinspection PyTypeChecker
-def maximal_weight_spanning_tree(training_set):
+def create_undirected_tree(training_set):
     events_size = training_set.get_events_size()
     weights = [[0] * events_size for _ in range(events_size)]
+
+    # calculate mutual information
     for i in range(0, events_size):
         for j in range(0, events_size):
             weights[i][j] = compute_mutual_information(training_set, i, j)
 
+    # now run the maximal_weight_spanning_tree algorithm
     graph = Graph(False)
     available_events = [True] * events_size
     available_events[0] = False
