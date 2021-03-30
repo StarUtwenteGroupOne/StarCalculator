@@ -543,15 +543,15 @@ def write_graph_to_dotfile(quantitative_bowtie, filename):
     with open(filename, 'w') as f:
         for v in graph.vertices:
             v.new_label = f"[{v.label}]"
-            # print(v.probability)
-            # for k in v.probability.keys():
-            #     # print(type(k))
-            #     if isinstance(k, Vertex):
-            #         v.new_label += f"\n {k.label} -> {v.probability[k]}"
-            #     elif isinstance(k, str):
-            #         v.new_label += f"\n {k} -> {v.probability[k]}"
-            #     else:
-            #         v.new_label += f"\n {k} -> {v.probability[k]}"
+            print(v.probability)
+            for k in v.probability.keys():
+                # print(type(k))
+                if isinstance(k, Vertex):
+                    v.new_label += f"\n {k.label} -> {v.probability[k]}"
+                elif isinstance(k, str):
+                    v.new_label += f"\n {k} -> {v.probability[k]}"
+                else:
+                    v.new_label += f"\n {k} -> {v.probability[k]}"
         for v in graph.vertices:
             v.label = v.new_label
 
