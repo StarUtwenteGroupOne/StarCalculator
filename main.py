@@ -259,8 +259,8 @@ def get_learning_parameters():
 def create_undirected_tree(training_set):
     events_size = training_set.get_events_size()
     weights = [[0] * events_size for _ in range(events_size)]
-    for i in range(0, events_size - 1):
-        for j in range(1, events_size):
+    for i in range(0, events_size):
+        for j in range(0, events_size):
             weights[i][j] = compute_mutual_information(training_set, i, j)
 
     graph = Graph(False)
@@ -272,7 +272,7 @@ def create_undirected_tree(training_set):
         highest_i = -1
         highest_j = -1
         for i in range(0, events_size):
-            for j in range(1, events_size):
+            for j in range(0, events_size):
                 if not available_events[i] and \
                         available_events[j] and \
                         (highest_i == -1 or weights[highest_i][highest_j] <= weights[i][j]):
@@ -298,7 +298,8 @@ def compute_mutual_information(training_set, event1, event2):
             if any([i == 0 for i in [probability_event1_and_event2, probability_event1, probability_event2]]):
                 weight += 0
             else:
-                weight += probability_event1_and_event2 * math.log(probability, 10)
+                probabilityLog = math.log(probability, 10)
+                weight += probability_event1_and_event2 * probabilityLog
     return weight
 
 
