@@ -1,6 +1,6 @@
 TOP_EVENT_LABEL = "TE"
 
-TRAININGSET_DIR = './trainingset'
+INPUT_DIR = './input'
 
 OUTPUT_DIR = './output'
 
