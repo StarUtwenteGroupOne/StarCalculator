@@ -1,13 +1,13 @@
 import csv
 import os
 
-from config import TRAININGSET_DIR
-from trainingset import TrainingSet
+from config import INPUT_DIR
+from trainingset.trainingset import TrainingSet
 
 
 def read_trainingset(filename):
     ft_trainingset = None
-    with open(os.path.join(TRAININGSET_DIR, filename), 'r') as f:
+    with open(os.path.join(INPUT_DIR, filename), 'r') as f:
         csv_file = csv.reader(f)
         ft_trainingset = TrainingSet()
 
