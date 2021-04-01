@@ -48,9 +48,9 @@ def get_paper_fault_tree():
 
 def get_paper_event_tree():
 
-    filenames = ['eventtree.csv', 'ET_other_order.csv']
+    filenames = ['eventtree.csv', 'ET_other_order.csv','ET_or_b.csv']
 
-    return read_trainingset(filenames[1])
+    return read_trainingset(filenames[2])
 
 
 if __name__ == '__main__':
