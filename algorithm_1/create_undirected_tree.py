@@ -47,10 +47,10 @@ def compute_mutual_information(training_set, event1, event2):
             probability_event2 = training_set.compute_single_probability(event2, event2_state)
             probability_event1_and_event2 = training_set.compute_combined_probability(event1, event1_state, event2,
                                                                                       event2_state)
-            probability = probability_event1_and_event2 / (probability_event1 * probability_event2)
             if any([i == 0 for i in [probability_event1_and_event2, probability_event1, probability_event2]]):
                 weight += 0
             else:
+                probability = probability_event1_and_event2 / (probability_event1 * probability_event2)
                 probabilityLog = probability.log10() / Decimal(2).log10()
                 weight += probability_event1_and_event2 * probabilityLog
 
