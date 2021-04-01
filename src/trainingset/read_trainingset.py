@@ -1,8 +1,8 @@
 import csv
 import os
 
-from config import INPUT_DIR
-from trainingset.trainingset import TrainingSet
+from src.config import INPUT_DIR
+from src.trainingset.trainingset import TrainingSet
 
 
 def read_trainingset(filename):

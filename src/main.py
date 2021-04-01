@@ -5,16 +5,17 @@
 
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
+import os
 
-from algorithm_3.learn_bowtie import create_bowtie, create_quantitative_event_tree, \
+from src.algorithm_3.learn_bowtie import create_bowtie, create_quantitative_event_tree, \
     create_quantitative_fault_tree
-from algorithm_2.orient_polytree import orient_polytree
-from algorithm_2.orient_tree import orient_tree
-from algorithm_1.create_undirected_tree import create_undirected_tree
+from src.algorithm_2.orient_polytree import orient_polytree
+from src.algorithm_2.orient_tree import orient_tree
+from src.algorithm_1.create_undirected_tree import create_undirected_tree
 
-from trainingset.read_trainingset import read_trainingset
+from src.trainingset.read_trainingset import read_trainingset
 # noinspection PyTypeChecker
-from write_graph import write_graph_to_dotfile
+from src.write_graph import write_graph_to_dotfile
 
 
 def start():
