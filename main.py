@@ -12,7 +12,7 @@ from algorithm_2.orient_polytree import orient_polytree
 from algorithm_2.orient_tree import orient_tree
 from algorithm_1.create_undirected_tree import create_undirected_tree
 
-from read_trainingset import read_trainingset
+from trainingset.read_trainingset import read_trainingset
 # noinspection PyTypeChecker
 from write_graph import write_graph_to_dotfile
 

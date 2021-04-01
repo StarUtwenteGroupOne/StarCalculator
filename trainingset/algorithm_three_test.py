@@ -1,5 +1,5 @@
 from lib.graph import *
-from trainingset import *
+from trainingset.trainingset import *
 
 G = Graph(directed=True)
 v1 = Vertex(G, label="v1")
