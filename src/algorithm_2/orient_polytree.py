@@ -1,5 +1,5 @@
-from algorithm_2.common import get_top_event, orient_edge_direction, is_leaf
-from lib.graph import Graph, Vertex, Edge
+from src.algorithm_2.common import get_top_event, orient_edge_direction, is_leaf
+from src.lib.graph import Graph, Vertex, Edge
 
 
 def orient_polytree(undirected_fault_tree: Graph):

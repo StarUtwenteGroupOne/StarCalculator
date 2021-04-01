@@ -1,5 +1,5 @@
-from algorithm_2.common import get_top_event, orient_edge_direction
-from lib.graph import Graph
+from src.algorithm_2.common import get_top_event, orient_edge_direction
+from src.lib.graph import Graph
 
 
 def orient_tree(undirected_event_tree: Graph):

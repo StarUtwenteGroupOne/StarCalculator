@@ -2,10 +2,10 @@
 TOP_EVENT_LABEL = "TE"
 
 # Directory where input files (trainingsets) are stored
-INPUT_DIR = './input'
+INPUT_DIR = '../input'
 
 # Directory where output (graphs) are stored.
-OUTPUT_DIR = './output'
+OUTPUT_DIR = './../output'
 
 # Alpha, the learning parameter used in algorithm_3.learn_bowtie.learn_quantative_fault_tree
 ALPHA = 1

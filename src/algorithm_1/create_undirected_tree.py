@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from lib.graph import Graph, Vertex, Edge
+from src.lib.graph import Graph, Vertex, Edge
 
 VertexList = [Vertex]
 
