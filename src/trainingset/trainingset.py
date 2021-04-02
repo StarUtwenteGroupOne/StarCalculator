@@ -11,7 +11,11 @@ class TrainingSet:
     # event_names above.
     observations = []
 
-    def __init__(self, training_set=None):
+    # A filename, if the trainingset was loaded from file. Necessary to retrieve mutual information
+    # from file, if that option is set in config (GET_MUTUAL_INFORMATION_FROM_FILE).
+    filename = None
+
+    def __init__(self, training_set=None, filename=None):
         if training_set:
             assert 'event_names' in training_set
             assert 'observations' in training_set
