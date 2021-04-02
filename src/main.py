@@ -11,7 +11,7 @@ from src.algorithm_3.learn_bowtie import create_bowtie, create_quantitative_even
     create_quantitative_fault_tree
 from src.algorithm_2.orient_polytree import orient_polytree
 from src.algorithm_2.orient_tree import orient_tree
-from src.algorithm_1.create_undirected_tree import create_undirected_tree
+from src.algorithm_1.create_undirected_tree import create_undirected_tree, create_undirected_tree_2
 
 from src.trainingset.read_trainingset import read_trainingset
 # noinspection PyTypeChecker
@@ -28,8 +28,8 @@ def start():
 
 
 def create_quantitative_bowtie(training_set_event_tree, training_set_fault_tree):
-    undirected_fault_tree = create_undirected_tree(training_set_fault_tree)
-    undirected_event_tree = create_undirected_tree(training_set_event_tree)
+    undirected_fault_tree = create_undirected_tree_2(training_set_fault_tree)
+    undirected_event_tree = create_undirected_tree_2(training_set_event_tree)
     directed_fault_tree = orient_polytree(undirected_fault_tree)
     directed_event_tree = orient_tree(undirected_event_tree)
     quantitative_event_tree, probability_of_event_tree = create_quantitative_event_tree(directed_event_tree,
