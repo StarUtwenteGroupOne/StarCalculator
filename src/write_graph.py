@@ -1,8 +1,8 @@
 import os
 
-from config import OUTPUT_DIR
-from lib import graph_io
-from lib.graph import Vertex
+from src.config import OUTPUT_DIR
+from lib.ut_graphs import graph_io
+from lib.ut_graphs.graph import Vertex
 
 
 def write_graph_to_dotfile(quantitative_bowtie, filename, with_probabilities=True):

@@ -1,5 +1,5 @@
-from config import TOP_EVENT_LABEL
-from lib.graph import Graph, Vertex, Edge
+from src.config import TOP_EVENT_LABEL
+from lib.ut_graphs.graph import Graph, Vertex, Edge
 
 
 def get_top_event(test_bowtie: Graph):

@@ -1,8 +1,8 @@
 import numpy as np
 
-from config import TOP_EVENT_LABEL, ALPHA
-from lib.graph import Graph, Edge
-from write_graph import write_graph_to_dotfile
+from src.config import TOP_EVENT_LABEL, ALPHA
+from lib.ut_graphs.graph import Graph, Edge
+from src.write_graph import write_graph_to_dotfile
 
 
 def create_bowtie(event_tree, fault_tree):
