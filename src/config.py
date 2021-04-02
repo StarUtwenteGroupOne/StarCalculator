@@ -15,4 +15,4 @@ OUTPUT_DIR = 'output'
 ALPHA = 1
 
 # Do not calculate, but retrieve mutual information from a file on disk.
-GET_MUTUAL_INFORMATION_FROM_FILE = True
+GET_MUTUAL_INFORMATION_FROM_FILE = False

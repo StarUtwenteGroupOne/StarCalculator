@@ -27,7 +27,7 @@ def get_mutual_information(training_set: TrainingSet):
                     columns = len(line)
                     had_first_line = True
                 else:
-                    weights.append(line)
+                    weights.append([Decimal(item) if item != '' else None for item in line if item != ''])
                     rows += 1
             if columns != rows:
                 raise AttributeError("The mutual information table is not square! (columns == "
