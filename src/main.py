@@ -44,14 +44,14 @@ def get_paper_fault_tree():
 
     filenames = ['faulttree.csv', 'FT_other_order.csv', 'FT_and_or.csv']
 
-    return read_trainingset(filenames[2])
+    return read_trainingset(filenames[1])
 
 
 def get_paper_event_tree():
 
     filenames = ['eventtree.csv', 'ET_other_order.csv','ET_or_b.csv']
 
-    return read_trainingset(filenames[2])
+    return read_trainingset(filenames[1])
 
 
 if __name__ == '__main__':

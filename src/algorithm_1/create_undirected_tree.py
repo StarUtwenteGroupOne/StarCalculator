@@ -1,6 +1,5 @@
-from decimal import Decimal
-
 from lib.ut_graphs.graph import Graph, Vertex, Edge
+from src.algorithm_1.get_mutual_information import get_mutual_information
 
 VertexList = [Vertex]
 
@@ -8,12 +7,8 @@ VertexList = [Vertex]
 # noinspection PyTypeChecker
 def create_undirected_tree(training_set):
     events_size = training_set.get_events_size()
-    weights = [[0] * events_size for _ in range(events_size)]
+    weights = get_mutual_information(training_set)
 
-    # calculate mutual information
-    for i in range(0, events_size):
-        for j in range(0, events_size):
-            weights[i][j] = compute_mutual_information(training_set, i, j)
 
     # now run the maximal_weight_spanning_tree algorithm
     graph = Graph(False)
@@ -37,21 +32,3 @@ def create_undirected_tree(training_set):
         graph.add_vertex(vertices[highest_j])
         graph.add_edge(edge)
     return graph
-
-
-def compute_mutual_information(training_set, event1, event2):
-    weight = 0
-    for event1_state in [True, False]:
-        for event2_state in [True, False]:
-            probability_event1 = training_set.compute_single_probability(event1, event1_state)
-            probability_event2 = training_set.compute_single_probability(event2, event2_state)
-            probability_event1_and_event2 = training_set.compute_combined_probability(event1, event1_state, event2,
-                                                                                      event2_state)
-            if any([i == 0 for i in [probability_event1_and_event2, probability_event1, probability_event2]]):
-                weight += 0
-            else:
-                probability = probability_event1_and_event2 / (probability_event1 * probability_event2)
-                probabilityLog = probability.log10() / Decimal(2).log10()
-                weight += probability_event1_and_event2 * probabilityLog
-
-    return weight if event1 != event2 else None
