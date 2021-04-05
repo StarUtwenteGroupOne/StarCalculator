@@ -1,5 +1,6 @@
 from lib.ut_graphs.graph import Graph, Vertex, Edge
 from src.algorithm_1.get_mutual_information import get_mutual_information
+from src.write_graph import write_graph_to_dotfile
 
 VertexList = [Vertex]
 
@@ -21,4 +22,6 @@ def create_undirected_tree(training_set):
         # print(highest_weight)
 
         graph += Edge(vertices[i], vertices[highest_j])
+
+    write_graph_to_dotfile(graph, training_set.filename, False)
     return graph

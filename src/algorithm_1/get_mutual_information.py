@@ -1,6 +1,8 @@
 import csv
+import math
 import os
-from decimal import Decimal
+
+import numpy as np
 
 from src.config import MUTUAL_INFORMATION_DIR, GET_MUTUAL_INFORMATION_FROM_FILE
 from src.trainingset.trainingset import TrainingSet
@@ -27,7 +29,7 @@ def get_mutual_information(training_set: TrainingSet):
                     columns = len(line)
                     had_first_line = True
                 else:
-                    weights.append([Decimal(item) if item != '' else None for item in line if item != ''])
+                    weights.append([float(item) if item != '' else None for item in line if item != ''])
                     rows += 1
             if columns != rows:
                 raise AttributeError("The mutual information table is not square! (columns == "
@@ -40,6 +42,8 @@ def get_mutual_information(training_set: TrainingSet):
         for i in range(0, events_size):
             for j in range(0, events_size):
                 weights[i][j] = compute_mutual_information(training_set, i, j)
+    print(training_set.event_names)
+    print('\\\\\n'.join([' & '.join(['{:1.3f}'.format(value) if value else '-----' for value in line]) for line in weights]))
     return weights
 
 
@@ -59,7 +63,6 @@ def compute_mutual_information(training_set, event1, event2):
             else:
                 probability = probability_event1_and_event2 / \
                               (probability_event1 * probability_event2)
-                probabilityLog = probability.log10() / Decimal(2).log10()
-                weight += probability_event1_and_event2 * probabilityLog
+                weight += probability_event1_and_event2 * math.log(probability, 2)
 
     return weight if event1 != event2 else None

@@ -25,4 +25,4 @@ def write_graph_to_dotfile(quantitative_bowtie, filename, with_probabilities=Tru
         for e in graph.edges:
             e._weight = " "
 
-        graph_io.write_dot(graph, f, True)
+        graph_io.write_dot(graph, f, False)
